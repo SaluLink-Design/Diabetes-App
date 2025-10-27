@@ -43,11 +43,6 @@ export default function Home() {
         setAllTreatments(treatments);
         setAllMedicines(medicines);
 
-        // Create initial case if none exists
-        if (!currentCase) {
-          createNewCase();
-        }
-
         setLoading(false);
       } catch (err) {
         console.error('Error loading data:', err);
@@ -65,20 +60,6 @@ export default function Home() {
         onComplete={() => {
           setShowSplash(false);
           setShowLanding(true);
-        }}
-      />
-    );
-  }
-
-  if (showLanding && !currentCase) {
-    return (
-      <LandingPage
-        onNewCase={() => {
-          createNewCase();
-          setShowLanding(false);
-        }}
-        onViewCases={() => {
-          alert('View Cases functionality coming soon!');
         }}
       />
     );
@@ -116,8 +97,18 @@ export default function Home() {
     );
   }
 
-  if (!currentCase) {
-    return null;
+  if (showLanding || !currentCase) {
+    return (
+      <LandingPage
+        onNewCase={() => {
+          createNewCase();
+          setShowLanding(false);
+        }}
+        onViewCases={() => {
+          alert('View Cases functionality coming soon!');
+        }}
+      />
+    );
   }
 
   return (
