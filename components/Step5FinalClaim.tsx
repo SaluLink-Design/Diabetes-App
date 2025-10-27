@@ -110,11 +110,26 @@ export const Step5FinalClaim = () => {
                     <div className="mt-1 text-sm text-gray-600">
                       <span>Code: {item.code}</span>
                       {' • '}
-                      <span>Covered: {item.numberCovered}</span>
+                      <span>Quantity: {item.selectedQuantity || 0} / {item.coverageLimit}</span>
                     </div>
                     {item.documentation?.note && (
                       <div className="mt-2 text-sm text-gray-700 bg-white p-2 rounded border border-gray-200">
-                        <span className="font-medium">Documentation:</span> {item.documentation.note}
+                        <span className="font-medium">Clinical Note:</span> {item.documentation.note}
+                      </div>
+                    )}
+                    {item.documentation?.files && item.documentation.files.length > 0 && (
+                      <div className="mt-2 text-sm text-gray-700">
+                        <span className="font-medium">Attached Files ({item.documentation.files.length}):</span>
+                        <ul className="list-disc list-inside ml-2 mt-1">
+                          {item.documentation.files.map((file: any, i: number) => (
+                            <li key={i}>{file.name}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {item.documentation?.timestamp && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        Documented: {new Date(item.documentation.timestamp).toLocaleString()}
                       </div>
                     )}
                   </div>
@@ -136,7 +151,7 @@ export const Step5FinalClaim = () => {
                     <div className="mt-1 text-sm text-gray-600">
                       <span>Code: {item.code}</span>
                       {' • '}
-                      <span>Covered: {item.numberCovered}</span>
+                      <span>Quantity: {item.selectedQuantity || 0} / {item.coverageLimit}</span>
                       {item.specialistsCovered && (
                         <>
                           {' • '}
@@ -146,7 +161,22 @@ export const Step5FinalClaim = () => {
                     </div>
                     {item.documentation?.note && (
                       <div className="mt-2 text-sm text-gray-700 bg-white p-2 rounded border border-gray-200">
-                        <span className="font-medium">Documentation:</span> {item.documentation.note}
+                        <span className="font-medium">Clinical Note:</span> {item.documentation.note}
+                      </div>
+                    )}
+                    {item.documentation?.files && item.documentation.files.length > 0 && (
+                      <div className="mt-2 text-sm text-gray-700">
+                        <span className="font-medium">Attached Files ({item.documentation.files.length}):</span>
+                        <ul className="list-disc list-inside ml-2 mt-1">
+                          {item.documentation.files.map((file: any, i: number) => (
+                            <li key={i}>{file.name}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {item.documentation?.timestamp && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        Documented: {new Date(item.documentation.timestamp).toLocaleString()}
                       </div>
                     )}
                   </div>

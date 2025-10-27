@@ -2,17 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import { Treatment, TreatmentItem } from '@/types';
-import { FileText, Upload, X } from 'lucide-react';
+import { Treatment, TreatmentItem, DocumentFile } from '@/types';
+import { FileText, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ProcedureQuantityControl } from './ProcedureQuantityControl';
+import { DocumentationUpload } from './DocumentationUpload';
 
 export const Step3TreatmentProtocol = () => {
   const { currentCase, allTreatments, updateCurrentCase, nextStep, previousStep } = useAppStore();
   const [treatment, setTreatment] = useState<Treatment | null>(null);
-  const [selectedDiagnostic, setSelectedDiagnostic] = useState<any[]>([]);
-  const [selectedOngoing, setSelectedOngoing] = useState<any[]>([]);
+  const [selectedDiagnostic, setSelectedDiagnostic] = useState<TreatmentItem[]>([]);
+  const [selectedOngoing, setSelectedOngoing] = useState<TreatmentItem[]>([]);
   const [documentationModal, setDocumentationModal] = useState<{
     open: boolean;
-    item: any;
+    item: TreatmentItem;
     basketType: 'diagnostic' | 'ongoing';
   } | null>(null);
 
@@ -22,6 +24,17 @@ export const Step3TreatmentProtocol = () => {
         (t) => t.condition === currentCase.confirmedCondition
       );
       setTreatment(foundTreatment || null);
+
+      if (currentCase.selectedTreatments) {
+        const diagnostic = currentCase.selectedTreatments.filter(
+          (t: any) => t.basketType === 'diagnostic'
+        );
+        const ongoing = currentCase.selectedTreatments.filter(
+          (t: any) => t.basketType === 'ongoing'
+        );
+        setSelectedDiagnostic(diagnostic);
+        setSelectedOngoing(ongoing);
+      }
     }
   }, [currentCase?.confirmedCondition, allTreatments]);
 
@@ -32,7 +45,12 @@ export const Step3TreatmentProtocol = () => {
     } else {
       setSelectedDiagnostic([
         ...selectedDiagnostic,
-        { ...item, basketType: 'diagnostic', documentation: { note: '', imageUrl: '' } },
+        {
+          ...item,
+          basketType: 'diagnostic' as any,
+          selectedQuantity: 0,
+          documentation: { note: '', files: [] },
+        },
       ]);
     }
   };
@@ -44,25 +62,50 @@ export const Step3TreatmentProtocol = () => {
     } else {
       setSelectedOngoing([
         ...selectedOngoing,
-        { ...item, basketType: 'ongoing', documentation: { note: '', imageUrl: '' } },
+        {
+          ...item,
+          basketType: 'ongoing' as any,
+          selectedQuantity: 0,
+          documentation: { note: '', files: [] },
+        },
       ]);
     }
   };
 
-  const handleOpenDocumentation = (item: any, basketType: 'diagnostic' | 'ongoing') => {
+  const handleQuantityChange = (
+    code: string,
+    quantity: number,
+    basketType: 'diagnostic' | 'ongoing'
+  ) => {
+    if (basketType === 'diagnostic') {
+      setSelectedDiagnostic(
+        selectedDiagnostic.map((i) =>
+          i.code === code ? { ...i, selectedQuantity: quantity } : i
+        )
+      );
+    } else {
+      setSelectedOngoing(
+        selectedOngoing.map((i) =>
+          i.code === code ? { ...i, selectedQuantity: quantity } : i
+        )
+      );
+    }
+  };
+
+  const handleOpenDocumentation = (item: TreatmentItem, basketType: 'diagnostic' | 'ongoing') => {
     setDocumentationModal({ open: true, item, basketType });
   };
 
-  const handleSaveDocumentation = (note: string, imageUrl: string) => {
+  const handleSaveDocumentation = (note: string, files: DocumentFile[], timestamp: Date) => {
     if (!documentationModal) return;
 
     const { item, basketType } = documentationModal;
-    
+
     if (basketType === 'diagnostic') {
       setSelectedDiagnostic(
         selectedDiagnostic.map((i) =>
           i.code === item.code
-            ? { ...i, documentation: { note, imageUrl } }
+            ? { ...i, documentation: { note, files, timestamp } }
             : i
         )
       );
@@ -70,7 +113,7 @@ export const Step3TreatmentProtocol = () => {
       setSelectedOngoing(
         selectedOngoing.map((i) =>
           i.code === item.code
-            ? { ...i, documentation: { note, imageUrl } }
+            ? { ...i, documentation: { note, files, timestamp } }
             : i
         )
       );
@@ -80,15 +123,31 @@ export const Step3TreatmentProtocol = () => {
   };
 
   const handleConfirm = () => {
-    if (selectedDiagnostic.length === 0 && selectedOngoing.length === 0) {
-      alert('Please select at least one treatment procedure.');
+    const allSelected = [...selectedDiagnostic, ...selectedOngoing];
+
+    const hasQuantityIssues = allSelected.some((item) => {
+      const quantity = item.selectedQuantity || 0;
+      return quantity === 0 || quantity > item.coverageLimit;
+    });
+
+    if (hasQuantityIssues) {
+      alert('Please set valid quantities for all selected procedures (greater than 0 and within coverage limits).');
       return;
     }
 
     updateCurrentCase({
-      selectedTreatments: [...selectedDiagnostic, ...selectedOngoing],
+      selectedTreatments: allSelected,
     });
     nextStep();
+  };
+
+  const getTotalSelected = () => selectedDiagnostic.length + selectedOngoing.length;
+
+  const hasDocumentation = (item: TreatmentItem) => {
+    return (
+      item.documentation?.note ||
+      (item.documentation?.files && item.documentation.files.length > 0)
+    );
   };
 
   return (
@@ -99,20 +158,47 @@ export const Step3TreatmentProtocol = () => {
             Step 3: Treatment Protocol Generation
           </h2>
           <p className="text-gray-600">
-            Select the appropriate diagnostic tests and ongoing management procedures for this case.
+            Select procedures, set quantities within coverage limits, and add documentation for each treatment.
           </p>
         </div>
 
-        {/* Diagnostic Basket */}
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-800">
+              <p className="font-semibold mb-1">Important Guidelines:</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Set quantity for each selected procedure (must be greater than 0)</li>
+                <li>Quantities cannot exceed coverage limits</li>
+                <li>Add clinical documentation for selected procedures</li>
+                <li>Upload supporting documents (JPG, PNG, PDF - Max 5MB)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-6 flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div>
+            <p className="text-sm text-gray-600">Total Procedures Selected</p>
+            <p className="text-2xl font-bold text-primary-600">{getTotalSelected()}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-gray-600">Condition</p>
+            <p className="text-lg font-semibold text-gray-900">
+              {currentCase?.confirmedCondition}
+            </p>
+          </div>
+        </div>
+
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-primary-500">
             <h3 className="text-lg font-bold text-gray-900">Diagnostic Basket</h3>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-600 bg-primary-100 px-3 py-1 rounded-full font-medium">
               {selectedDiagnostic.length} selected
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {treatment?.diagnosticBasket.map((item) => {
               const isSelected = selectedDiagnostic.some((i) => i.code === item.code);
               const selectedItem = selectedDiagnostic.find((i) => i.code === item.code);
@@ -123,7 +209,7 @@ export const Step3TreatmentProtocol = () => {
                   className={`border-2 rounded-lg p-4 transition-all ${
                     isSelected
                       ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200'
+                      : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <label className="flex items-start cursor-pointer">
@@ -131,51 +217,70 @@ export const Step3TreatmentProtocol = () => {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleToggleDiagnostic(item)}
-                      className="w-4 h-4 text-primary-600 focus:ring-primary-500 rounded mt-1"
+                      className="w-5 h-5 text-primary-600 focus:ring-primary-500 rounded mt-1"
                     />
                     <div className="ml-3 flex-1">
-                      <p className="font-medium text-gray-900">{item.description}</p>
-                      <div className="flex gap-4 mt-2 text-sm text-gray-600">
-                        <span>Code: <span className="font-mono">{item.code}</span></span>
-                        <span>Covered: {item.numberCovered}</span>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900 text-lg">
+                            {item.description}
+                          </p>
+                          <div className="flex gap-4 mt-1 text-sm text-gray-600">
+                            <span>
+                              Code: <span className="font-mono font-medium">{item.code}</span>
+                            </span>
+                            <span>
+                              Max Coverage: <span className="font-semibold">{item.coverageLimit}</span>
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </label>
 
-                  {isSelected && (
-                    <div className="mt-3 pt-3 border-t border-primary-200">
-                      <button
-                        onClick={() => handleOpenDocumentation(selectedItem, 'diagnostic')}
-                        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
-                      >
-                        <FileText className="w-4 h-4" />
-                        {selectedItem?.documentation?.note || selectedItem?.documentation?.imageUrl
-                          ? 'Edit Documentation'
-                          : 'Add Documentation'}
-                      </button>
-                      {(selectedItem?.documentation?.note || selectedItem?.documentation?.imageUrl) && (
-                        <div className="mt-2 text-xs text-green-600">
-                          ✓ Documentation added
+                      {isSelected && selectedItem && (
+                        <div className="mt-4 space-y-3 pt-3 border-t border-primary-200">
+                          <ProcedureQuantityControl
+                            item={selectedItem}
+                            onQuantityChange={(quantity) =>
+                              handleQuantityChange(item.code, quantity, 'diagnostic')
+                            }
+                          />
+
+                          <div className="flex items-center justify-between">
+                            <button
+                              onClick={() => handleOpenDocumentation(selectedItem, 'diagnostic')}
+                              className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                            >
+                              <FileText className="w-4 h-4" />
+                              {hasDocumentation(selectedItem)
+                                ? 'Edit Documentation'
+                                : 'Add Documentation'}
+                            </button>
+                            {hasDocumentation(selectedItem) && (
+                              <div className="flex items-center gap-1 text-xs text-green-600">
+                                <CheckCircle2 className="w-4 h-4" />
+                                <span>Documented</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
-                  )}
+                  </label>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Ongoing Management Basket */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-green-500">
             <h3 className="text-lg font-bold text-gray-900">Ongoing Management Basket</h3>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-600 bg-green-100 px-3 py-1 rounded-full font-medium">
               {selectedOngoing.length} selected
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {treatment?.ongoingManagementBasket.map((item) => {
               const isSelected = selectedOngoing.some((i) => i.code === item.code);
               const selectedItem = selectedOngoing.find((i) => i.code === item.code);
@@ -185,8 +290,8 @@ export const Step3TreatmentProtocol = () => {
                   key={item.code}
                   className={`border-2 rounded-lg p-4 transition-all ${
                     isSelected
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200'
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <label className="flex items-start cursor-pointer">
@@ -194,45 +299,64 @@ export const Step3TreatmentProtocol = () => {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleToggleOngoing(item)}
-                      className="w-4 h-4 text-primary-600 focus:ring-primary-500 rounded mt-1"
+                      className="w-5 h-5 text-green-600 focus:ring-green-500 rounded mt-1"
                     />
                     <div className="ml-3 flex-1">
-                      <p className="font-medium text-gray-900">{item.description}</p>
-                      <div className="flex gap-4 mt-2 text-sm text-gray-600">
-                        <span>Code: <span className="font-mono">{item.code}</span></span>
-                        <span>Tests Covered: {item.numberCovered}</span>
-                        {item.specialistsCovered && (
-                          <span>Specialists: {item.specialistsCovered}</span>
-                        )}
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900 text-lg">
+                            {item.description}
+                          </p>
+                          <div className="flex gap-4 mt-1 text-sm text-gray-600">
+                            <span>
+                              Code: <span className="font-mono font-medium">{item.code}</span>
+                            </span>
+                            <span>
+                              Max Coverage: <span className="font-semibold">{item.coverageLimit}</span>
+                            </span>
+                            {item.specialistsCovered && (
+                              <span>Specialists: {item.specialistsCovered}</span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </label>
 
-                  {isSelected && (
-                    <div className="mt-3 pt-3 border-t border-primary-200">
-                      <button
-                        onClick={() => handleOpenDocumentation(selectedItem, 'ongoing')}
-                        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
-                      >
-                        <FileText className="w-4 h-4" />
-                        {selectedItem?.documentation?.note || selectedItem?.documentation?.imageUrl
-                          ? 'Edit Documentation'
-                          : 'Add Documentation'}
-                      </button>
-                      {(selectedItem?.documentation?.note || selectedItem?.documentation?.imageUrl) && (
-                        <div className="mt-2 text-xs text-green-600">
-                          ✓ Documentation added
+                      {isSelected && selectedItem && (
+                        <div className="mt-4 space-y-3 pt-3 border-t border-green-200">
+                          <ProcedureQuantityControl
+                            item={selectedItem}
+                            onQuantityChange={(quantity) =>
+                              handleQuantityChange(item.code, quantity, 'ongoing')
+                            }
+                          />
+
+                          <div className="flex items-center justify-between">
+                            <button
+                              onClick={() => handleOpenDocumentation(selectedItem, 'ongoing')}
+                              className="flex items-center gap-2 text-sm text-green-600 hover:text-green-700 font-medium"
+                            >
+                              <FileText className="w-4 h-4" />
+                              {hasDocumentation(selectedItem)
+                                ? 'Edit Documentation'
+                                : 'Add Documentation'}
+                            </button>
+                            {hasDocumentation(selectedItem) && (
+                              <div className="flex items-center gap-1 text-xs text-green-600">
+                                <CheckCircle2 className="w-4 h-4" />
+                                <span>Documented</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
-                  )}
+                  </label>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Navigation Buttons */}
         <div className="flex gap-4">
           <button
             onClick={previousStep}
@@ -242,7 +366,7 @@ export const Step3TreatmentProtocol = () => {
           </button>
           <button
             onClick={handleConfirm}
-            disabled={selectedDiagnostic.length === 0 && selectedOngoing.length === 0}
+            disabled={getTotalSelected() === 0}
             className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             Confirm Treatment Selection
@@ -250,10 +374,10 @@ export const Step3TreatmentProtocol = () => {
         </div>
       </div>
 
-      {/* Documentation Modal */}
       {documentationModal && (
-        <DocumentationModal
+        <DocumentationUpload
           item={documentationModal.item}
+          caseId={currentCase?.id || 'unknown'}
           onSave={handleSaveDocumentation}
           onClose={() => setDocumentationModal(null)}
         />
@@ -261,89 +385,3 @@ export const Step3TreatmentProtocol = () => {
     </div>
   );
 };
-
-// Documentation Modal Component
-const DocumentationModal = ({
-  item,
-  onSave,
-  onClose,
-}: {
-  item: any;
-  onSave: (note: string, imageUrl: string) => void;
-  onClose: () => void;
-}) => {
-  const [note, setNote] = useState(item.documentation?.note || '');
-  const [imageUrl, setImageUrl] = useState(item.documentation?.imageUrl || '');
-
-  const handleSave = () => {
-    onSave(note, imageUrl);
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-gray-900">Add Documentation</h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="mb-4">
-            <p className="text-sm text-gray-600 mb-2">
-              <span className="font-medium">Procedure:</span> {item.description}
-            </p>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Clinical Note
-            </label>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Enter clinical findings, results, or observations..."
-              className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            />
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Image URL (Optional)
-            </label>
-            <input
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Enter image URL or upload link..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Enter a URL to an uploaded lab report, scan result, or other documentation.
-            </p>
-          </div>
-
-          <div className="flex gap-4">
-            <button
-              onClick={onClose}
-              className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-            >
-              Save Documentation
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-

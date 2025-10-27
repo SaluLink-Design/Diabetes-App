@@ -99,22 +99,28 @@ export const loadTreatmentData = async (): Promise<Treatment[]> => {
       
       // Add diagnostic basket item
       if (row[1]) {
+        const numberCovered = row[3]?.trim() || '0';
         treatment.diagnosticBasket.push({
           description: row[1].trim(),
           code: row[2]?.trim() || '',
-          numberCovered: row[3]?.trim() || '',
+          numberCovered: numberCovered,
+          coverageLimit: parseInt(numberCovered) || 0,
           selected: false,
+          selectedQuantity: 0,
         });
       }
-      
+
       // Add ongoing management basket item
       if (row[4]) {
+        const numberCovered = row[6]?.trim() || '0';
         treatment.ongoingManagementBasket.push({
           description: row[4].trim(),
           code: row[5]?.trim() || '',
-          numberCovered: row[6]?.trim() || '',
+          numberCovered: numberCovered,
+          coverageLimit: parseInt(numberCovered) || 0,
           specialistsCovered: row[7]?.trim() || '',
           selected: false,
+          selectedQuantity: 0,
         });
       }
     }

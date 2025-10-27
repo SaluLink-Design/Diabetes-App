@@ -16,12 +16,26 @@ export interface TreatmentItem {
   description: string;
   code: string;
   numberCovered: string;
+  coverageLimit: number;
   specialistsCovered?: string;
   selected?: boolean;
+  selectedQuantity?: number;
+  basketType?: 'diagnostic' | 'ongoing';
   documentation?: {
     note?: string;
     imageUrl?: string;
+    files?: DocumentFile[];
+    timestamp?: Date;
   };
+}
+
+export interface DocumentFile {
+  id: string;
+  name: string;
+  url: string;
+  type: 'image' | 'pdf' | 'other';
+  size: number;
+  uploadedAt: Date;
 }
 
 export interface Medicine {
