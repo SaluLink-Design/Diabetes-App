@@ -2,15 +2,16 @@
 
 import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import { 
-  FileText, 
-  Trash2, 
-  Sun, 
-  User, 
-  HelpCircle, 
+import {
+  Plus,
+  Eye,
+  Trash2,
+  Sun,
+  User,
+  ArrowUpRight,
   LogOut,
   ChevronRight,
-  FolderOpen
+  ChevronDown
 } from 'lucide-react';
 
 export const Sidebar = () => {
@@ -30,65 +31,45 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="w-72 bg-gradient-to-b from-gray-100 to-gray-50 border-r border-gray-200 h-screen flex flex-col">
-      {/* Logo Section */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">S</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">SaluLink</h1>
-            <p className="text-xs text-gray-600">Chronic Treatment App</p>
-          </div>
-        </div>
-      </div>
-
+    <div className="w-[282px] bg-[#F2F2F2] border-r border-[rgba(28,28,28,0.1)] h-screen flex flex-col justify-between">
       {/* Main Navigation */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="space-y-2">
+      <div className="w-[282px] h-[236px] p-5 flex flex-col items-start gap-1">
+        <div className="flex flex-col gap-3 w-full mt-[53px]">
           {/* New Case Button */}
           <button
             onClick={createNewCase}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+            className="flex w-[242px] px-4 py-2 justify-center items-center gap-2 rounded-[12px] bg-[#1C1C1C] h-10 relative hover:bg-black transition-colors"
           >
-            <FileText className="w-5 h-5" />
-            <span className="font-medium">New Case</span>
+            <Plus className="w-[14px] h-[14px] text-white fill-white" strokeWidth={3} />
+            <span className="text-white text-center font-[Inter] text-[18px] font-normal leading-6">New Case</span>
           </button>
 
           {/* View Cases Button */}
           <button
             onClick={() => setShowCases(!showCases)}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+            className="flex w-[242px] px-4 py-2 justify-center items-center gap-2 rounded-[12px] bg-[#1C1C1C] h-10 relative hover:bg-black transition-colors"
           >
-            <div className="flex items-center gap-3">
-              <FolderOpen className="w-5 h-5" />
-              <span className="font-medium">View Cases</span>
-            </div>
-            <ChevronRight
-              className={`w-4 h-4 transition-transform ${
-                showCases ? 'rotate-90' : ''
-              }`}
-            />
+            <Eye className="w-[15px] h-[14px] text-white" strokeWidth={2.5} />
+            <span className="text-white text-center font-[Inter] text-[18px] font-normal leading-6">View Cases</span>
           </button>
 
           {/* Cases List */}
           {showCases && (
             <div className="ml-4 space-y-1 max-h-64 overflow-y-auto">
               {savedCases.length === 0 ? (
-                <p className="text-sm text-gray-500 px-4 py-2">No saved cases</p>
+                <p className="text-sm text-black/60 px-3 py-2">No saved cases</p>
               ) : (
                 savedCases.map((caseItem) => (
                   <div
                     key={caseItem.id}
-                    className="group flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors"
+                    className="group flex items-center justify-between px-3 py-2 text-sm text-black hover:bg-black/5 rounded-lg cursor-pointer transition-colors"
                     onClick={() => handleLoadCase(caseItem.id)}
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
+                      <p className="font-medium truncate text-[14px]">
                         {caseItem.confirmedCondition || 'Untitled Case'}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-black/60">
                         {new Date(caseItem.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -107,22 +88,26 @@ export const Sidebar = () => {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="border-t border-gray-200 p-4 space-y-2">
-        <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
-          <Sun className="w-5 h-5" />
-          <span className="text-sm">Light mode</span>
+      <div className="w-[282px] px-5 py-5 flex flex-col items-start gap-1 border-t border-[rgba(28,28,28,0.1)]">
+        <button className="flex px-3 py-3 items-center gap-3 self-stretch rounded-lg hover:bg-black/5 transition-colors">
+          <Trash2 className="w-6 h-6 text-black" strokeWidth={1.5} />
+          <span className="text-black font-[Inter] text-[14px] font-normal leading-5 flex-1">Clear conversations</span>
         </button>
-        <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
-          <User className="w-5 h-5" />
-          <span className="text-sm">My account</span>
+        <button className="flex px-3 py-3 items-center gap-3 self-stretch rounded-lg hover:bg-black/5 transition-colors">
+          <Sun className="w-6 h-6 text-black" strokeWidth={1.5} />
+          <span className="text-black font-[Inter] text-[14px] font-normal leading-5 flex-1">Light mode</span>
         </button>
-        <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
-          <HelpCircle className="w-5 h-5" />
-          <span className="text-sm">Updates & FAQ</span>
+        <button className="flex px-3 py-3 items-center gap-3 self-stretch rounded-lg hover:bg-black/5 transition-colors">
+          <User className="w-6 h-6 text-black" strokeWidth={1.5} />
+          <span className="text-black font-[Inter] text-[14px] font-normal leading-5 flex-1">My account</span>
         </button>
-        <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
-          <LogOut className="w-5 h-5" />
-          <span className="text-sm">Log out</span>
+        <button className="flex px-3 py-3 items-center gap-3 self-stretch rounded-lg hover:bg-black/5 transition-colors">
+          <ArrowUpRight className="w-6 h-6 text-black" strokeWidth={1.5} />
+          <span className="text-black font-[Inter] text-[14px] font-normal leading-5 flex-1">Updates & FAQ</span>
+        </button>
+        <button className="flex px-3 py-3 items-center gap-3 self-stretch rounded-lg hover:bg-black/5 transition-colors">
+          <LogOut className="w-6 h-6 text-black" strokeWidth={1.5} />
+          <span className="text-black font-[Inter] text-[14px] font-normal leading-5 flex-1">Log out</span>
         </button>
       </div>
     </div>

@@ -86,21 +86,21 @@ export const Step4Medication = () => {
 
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="bg-white rounded-[12px] shadow-lg p-8">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-[#1C1C1C] mb-2">
             Step 4: Medication Mapping and Selection
           </h2>
-          <p className="text-gray-600">
+          <p className="text-[#1C1C1C]/60">
             Select appropriate medications for the chronic condition. Medications are filtered by the selected medical plan.
           </p>
         </div>
 
         {/* Plan Filter */}
-        <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+        <div className="mb-6 p-4 bg-[#1C1C1C]/5 border border-[rgba(28,28,28,0.2)] rounded-[12px]">
           <div className="flex items-center gap-2 mb-3">
-            <Filter className="w-5 h-5 text-gray-600" />
-            <label className="text-sm font-medium text-gray-700">
+            <Filter className="w-5 h-5 text-[#1C1C1C]/60" />
+            <label className="text-sm font-medium text-[#1C1C1C]">
               Filter by Medical Plan
             </label>
           </div>
@@ -109,10 +109,10 @@ export const Step4Medication = () => {
               <button
                 key={plan}
                 onClick={() => setSelectedPlan(plan)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`px-4 py-2 rounded-[12px] font-medium transition-all ${
                   selectedPlan === plan
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:border-primary-300'
+                    ? 'bg-[#1C1C1C] text-white'
+                    : 'bg-white text-[#1C1C1C] border border-[rgba(28,28,28,0.2)] hover:border-[#1C1C1C]/50'
                 }`}
               >
                 {plan}
@@ -124,8 +124,8 @@ export const Step4Medication = () => {
         {/* Medications by Class */}
         <div className="space-y-6 mb-8">
           {Array.from(groupedMedicines.entries()).map(([medicineClass, medicines]) => (
-            <div key={medicineClass} className="border border-gray-200 rounded-lg p-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
+            <div key={medicineClass} className="border border-[rgba(28,28,28,0.2)] rounded-[12px] p-4">
+              <h3 className="text-lg font-bold text-[#1C1C1C] mb-4">
                 {medicineClass}
               </h3>
 
@@ -139,12 +139,12 @@ export const Step4Medication = () => {
                   return (
                     <div
                       key={medicine.medicineNameStrength}
-                      className={`border-2 rounded-lg p-4 transition-all ${
+                      className={`border-2 rounded-[12px] p-4 transition-all ${
                         !isAvailable
-                          ? 'border-gray-200 bg-gray-50 opacity-60'
+                          ? 'border-[rgba(28,28,28,0.2)] bg-[#1C1C1C]/5 opacity-60'
                           : isSelected
-                          ? 'border-primary-500 bg-primary-50'
-                          : 'border-gray-200 hover:border-primary-300'
+                          ? 'border-[#1C1C1C] bg-[#1C1C1C]/5'
+                          : 'border-[rgba(28,28,28,0.2)] hover:border-[#1C1C1C]/50'
                       }`}
                     >
                       <label
@@ -157,12 +157,12 @@ export const Step4Medication = () => {
                           checked={isSelected}
                           onChange={() => handleToggleMedicine(medicine)}
                           disabled={!isAvailable}
-                          className="w-4 h-4 text-primary-600 focus:ring-primary-500 rounded mt-1 disabled:opacity-50"
+                          className="w-4 h-4 text-[#1C1C1C] focus:ring-[#1C1C1C] rounded mt-1 disabled:opacity-50"
                         />
                         <div className="ml-3 flex-1">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <p className="font-medium text-gray-900">
+                              <p className="font-medium text-[#1C1C1C]">
                                 {medicine.medicineNameStrength}
                               </p>
                               {!isAvailable && (
@@ -172,26 +172,26 @@ export const Step4Medication = () => {
                               )}
                             </div>
                             {isSelected && (
-                              <CheckCircle2 className="w-5 h-5 text-primary-600 ml-2" />
+                              <CheckCircle2 className="w-5 h-5 text-[#1C1C1C] ml-2" />
                             )}
                           </div>
 
                           <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                             <div>
-                              <span className="text-gray-600">Active Ingredient:</span>
-                              <p className="font-medium text-gray-900">
+                              <span className="text-[#1C1C1C]/60">Active Ingredient:</span>
+                              <p className="font-medium text-[#1C1C1C]">
                                 {medicine.activeIngredient}
                               </p>
                             </div>
                             <div>
-                              <span className="text-gray-600">CDA (Core/Priority/Saver):</span>
-                              <p className="font-medium text-gray-900">
+                              <span className="text-[#1C1C1C]/60">CDA (Core/Priority/Saver):</span>
+                              <p className="font-medium text-[#1C1C1C]">
                                 {medicine.cdaCorePrioritySaver}
                               </p>
                             </div>
                             <div className="col-span-2">
-                              <span className="text-gray-600">CDA (Executive/Comprehensive):</span>
-                              <p className="font-medium text-gray-900">
+                              <span className="text-[#1C1C1C]/60">CDA (Executive/Comprehensive):</span>
+                              <p className="font-medium text-[#1C1C1C]">
                                 {medicine.cdaExecutiveComprehensive}
                               </p>
                             </div>
@@ -208,7 +208,7 @@ export const Step4Medication = () => {
 
         {/* Selected Medications Summary */}
         {selectedMedicines.length > 0 && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-[12px]">
             <p className="text-sm font-medium text-green-900 mb-2">
               Selected Medications ({selectedMedicines.length})
             </p>
@@ -226,14 +226,14 @@ export const Step4Medication = () => {
         <div className="flex gap-4">
           <button
             onClick={previousStep}
-            className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+            className="flex-1 bg-[#1C1C1C]/10 text-[#1C1C1C] py-3 px-6 rounded-[12px] font-medium hover:bg-[#1C1C1C]/20 transition-colors"
           >
             Previous
           </button>
           <button
             onClick={handleConfirm}
             disabled={selectedMedicines.length === 0}
-            className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 bg-[#1C1C1C] text-white py-3 px-6 rounded-[12px] font-medium hover:bg-black disabled:bg-[#1C1C1C]/30 disabled:cursor-not-allowed transition-colors"
           >
             Confirm Medication Selection
           </button>

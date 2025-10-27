@@ -93,12 +93,12 @@ export const Step3TreatmentProtocol = () => {
 
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="bg-white rounded-[12px] shadow-lg p-8">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-[#1C1C1C] mb-2">
             Step 3: Treatment Protocol Generation
           </h2>
-          <p className="text-gray-600">
+          <p className="text-[#1C1C1C]/60">
             Select the appropriate diagnostic tests and ongoing management procedures for this case.
           </p>
         </div>
@@ -106,8 +106,8 @@ export const Step3TreatmentProtocol = () => {
         {/* Diagnostic Basket */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">Diagnostic Basket</h3>
-            <span className="text-sm text-gray-500">
+            <h3 className="text-lg font-bold text-[#1C1C1C]">Diagnostic Basket</h3>
+            <span className="text-sm text-[#1C1C1C]/60">
               {selectedDiagnostic.length} selected
             </span>
           </div>
@@ -120,10 +120,10 @@ export const Step3TreatmentProtocol = () => {
               return (
                 <div
                   key={item.code}
-                  className={`border-2 rounded-lg p-4 transition-all ${
+                  className={`border-2 rounded-[12px] p-4 transition-all ${
                     isSelected
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200'
+                      ? 'border-[#1C1C1C] bg-[#1C1C1C]/5'
+                      : 'border-[rgba(28,28,28,0.2)]'
                   }`}
                 >
                   <label className="flex items-start cursor-pointer">
@@ -131,11 +131,11 @@ export const Step3TreatmentProtocol = () => {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleToggleDiagnostic(item)}
-                      className="w-4 h-4 text-primary-600 focus:ring-primary-500 rounded mt-1"
+                      className="w-4 h-4 text-[#1C1C1C] focus:ring-[#1C1C1C] rounded mt-1"
                     />
                     <div className="ml-3 flex-1">
-                      <p className="font-medium text-gray-900">{item.description}</p>
-                      <div className="flex gap-4 mt-2 text-sm text-gray-600">
+                      <p className="font-medium text-[#1C1C1C]">{item.description}</p>
+                      <div className="flex gap-4 mt-2 text-sm text-[#1C1C1C]/60">
                         <span>Code: <span className="font-mono">{item.code}</span></span>
                         <span>Covered: {item.numberCovered}</span>
                       </div>
@@ -143,10 +143,10 @@ export const Step3TreatmentProtocol = () => {
                   </label>
 
                   {isSelected && (
-                    <div className="mt-3 pt-3 border-t border-primary-200">
+                    <div className="mt-3 pt-3 border-t border-[rgba(28,28,28,0.2)]">
                       <button
                         onClick={() => handleOpenDocumentation(selectedItem, 'diagnostic')}
-                        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                        className="flex items-center gap-2 text-sm text-[#1C1C1C] hover:text-black font-medium"
                       >
                         <FileText className="w-4 h-4" />
                         {selectedItem?.documentation?.note || selectedItem?.documentation?.imageUrl
@@ -169,8 +169,8 @@ export const Step3TreatmentProtocol = () => {
         {/* Ongoing Management Basket */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">Ongoing Management Basket</h3>
-            <span className="text-sm text-gray-500">
+            <h3 className="text-lg font-bold text-[#1C1C1C]">Ongoing Management Basket</h3>
+            <span className="text-sm text-[#1C1C1C]/60">
               {selectedOngoing.length} selected
             </span>
           </div>
@@ -183,10 +183,10 @@ export const Step3TreatmentProtocol = () => {
               return (
                 <div
                   key={item.code}
-                  className={`border-2 rounded-lg p-4 transition-all ${
+                  className={`border-2 rounded-[12px] p-4 transition-all ${
                     isSelected
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200'
+                      ? 'border-[#1C1C1C] bg-[#1C1C1C]/5'
+                      : 'border-[rgba(28,28,28,0.2)]'
                   }`}
                 >
                   <label className="flex items-start cursor-pointer">
@@ -194,11 +194,11 @@ export const Step3TreatmentProtocol = () => {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleToggleOngoing(item)}
-                      className="w-4 h-4 text-primary-600 focus:ring-primary-500 rounded mt-1"
+                      className="w-4 h-4 text-[#1C1C1C] focus:ring-[#1C1C1C] rounded mt-1"
                     />
                     <div className="ml-3 flex-1">
-                      <p className="font-medium text-gray-900">{item.description}</p>
-                      <div className="flex gap-4 mt-2 text-sm text-gray-600">
+                      <p className="font-medium text-[#1C1C1C]">{item.description}</p>
+                      <div className="flex gap-4 mt-2 text-sm text-[#1C1C1C]/60">
                         <span>Code: <span className="font-mono">{item.code}</span></span>
                         <span>Tests Covered: {item.numberCovered}</span>
                         {item.specialistsCovered && (
@@ -209,10 +209,10 @@ export const Step3TreatmentProtocol = () => {
                   </label>
 
                   {isSelected && (
-                    <div className="mt-3 pt-3 border-t border-primary-200">
+                    <div className="mt-3 pt-3 border-t border-[rgba(28,28,28,0.2)]">
                       <button
                         onClick={() => handleOpenDocumentation(selectedItem, 'ongoing')}
-                        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                        className="flex items-center gap-2 text-sm text-[#1C1C1C] hover:text-black font-medium"
                       >
                         <FileText className="w-4 h-4" />
                         {selectedItem?.documentation?.note || selectedItem?.documentation?.imageUrl
@@ -236,14 +236,14 @@ export const Step3TreatmentProtocol = () => {
         <div className="flex gap-4">
           <button
             onClick={previousStep}
-            className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+            className="flex-1 bg-[#1C1C1C]/10 text-[#1C1C1C] py-3 px-6 rounded-[12px] font-medium hover:bg-[#1C1C1C]/20 transition-colors"
           >
             Previous
           </button>
           <button
             onClick={handleConfirm}
             disabled={selectedDiagnostic.length === 0 && selectedOngoing.length === 0}
-            className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 bg-[#1C1C1C] text-white py-3 px-6 rounded-[12px] font-medium hover:bg-black disabled:bg-[#1C1C1C]/30 disabled:cursor-not-allowed transition-colors"
           >
             Confirm Treatment Selection
           </button>
@@ -281,38 +281,38 @@ const DocumentationModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-[12px] shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-gray-900">Add Documentation</h3>
+            <h3 className="text-xl font-bold text-[#1C1C1C]">Add Documentation</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-[#1C1C1C]/40 hover:text-[#1C1C1C]/60"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
           <div className="mb-4">
-            <p className="text-sm text-gray-600 mb-2">
+            <p className="text-sm text-[#1C1C1C]/60 mb-2">
               <span className="font-medium">Procedure:</span> {item.description}
             </p>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#1C1C1C] mb-2">
               Clinical Note
             </label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Enter clinical findings, results, or observations..."
-              className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              className="w-full h-32 px-4 py-3 border border-[rgba(28,28,28,0.2)] rounded-[12px] focus:ring-2 focus:ring-[#1C1C1C] focus:border-transparent resize-none"
             />
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#1C1C1C] mb-2">
               Image URL (Optional)
             </label>
             <input
@@ -320,9 +320,9 @@ const DocumentationModal = ({
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="Enter image URL or upload link..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-[rgba(28,28,28,0.2)] rounded-[12px] focus:ring-2 focus:ring-[#1C1C1C] focus:border-transparent"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[#1C1C1C]/60 mt-1">
               Enter a URL to an uploaded lab report, scan result, or other documentation.
             </p>
           </div>
@@ -330,13 +330,13 @@ const DocumentationModal = ({
           <div className="flex gap-4">
             <button
               onClick={onClose}
-              className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+              className="flex-1 bg-[#1C1C1C]/10 text-[#1C1C1C] py-3 px-6 rounded-[12px] font-medium hover:bg-[#1C1C1C]/20 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+              className="flex-1 bg-[#1C1C1C] text-white py-3 px-6 rounded-[12px] font-medium hover:bg-black transition-colors"
             >
               Save Documentation
             </button>

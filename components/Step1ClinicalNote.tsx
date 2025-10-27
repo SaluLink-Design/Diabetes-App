@@ -62,26 +62,26 @@ export const Step1ClinicalNote = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="bg-white rounded-[12px] shadow-lg p-8">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-[#1C1C1C] mb-2">
             Step 1: Clinical Note Input and Analysis
           </h2>
-          <p className="text-gray-600">
+          <p className="text-[#1C1C1C]/60">
             Enter or paste the patient's clinical note below. The system will analyze it to identify potential chronic conditions.
           </p>
         </div>
 
         {/* Clinical Note Input */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-[#1C1C1C] mb-2">
             Patient Clinical Note
           </label>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Enter patient clinical note here..."
-            className="w-full h-48 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            className="w-full h-48 px-4 py-3 border border-[rgba(28,28,28,0.2)] rounded-[12px] focus:ring-2 focus:ring-[#1C1C1C] focus:border-transparent resize-none"
             disabled={isAnalyzing || detectedConditions.length > 0}
           />
         </div>
@@ -99,7 +99,7 @@ export const Step1ClinicalNote = () => {
           <button
             onClick={handleAnalyze}
             disabled={isAnalyzing || !note.trim()}
-            className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="w-full bg-[#1C1C1C] text-white py-3 px-6 rounded-[12px] font-medium hover:bg-black disabled:bg-[#1C1C1C]/30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >
             {isAnalyzing ? (
               <>
@@ -126,16 +126,16 @@ export const Step1ClinicalNote = () => {
             </div>
 
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#1C1C1C] mb-2">
                 Select the most accurate condition:
               </label>
               {detectedConditions.map((condition) => (
                 <label
                   key={condition}
-                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`flex items-center p-4 border-2 rounded-[12px] cursor-pointer transition-all ${
                     selectedCondition === condition
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-gray-200 hover:border-primary-300'
+                      ? 'border-[#1C1C1C] bg-[#1C1C1C]/5'
+                      : 'border-[rgba(28,28,28,0.2)] hover:border-[#1C1C1C]/50'
                   }`}
                 >
                   <input
@@ -144,9 +144,9 @@ export const Step1ClinicalNote = () => {
                     value={condition}
                     checked={selectedCondition === condition}
                     onChange={(e) => setSelectedCondition(e.target.value)}
-                    className="w-4 h-4 text-primary-600 focus:ring-primary-500"
+                    className="w-4 h-4 text-[#1C1C1C] focus:ring-[#1C1C1C]"
                   />
-                  <span className="ml-3 text-gray-900 font-medium">{condition}</span>
+                  <span className="ml-3 text-[#1C1C1C] font-medium">{condition}</span>
                 </label>
               ))}
             </div>
@@ -159,14 +159,14 @@ export const Step1ClinicalNote = () => {
                   setSelectedCondition('');
                   setError('');
                 }}
-                className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                className="flex-1 bg-[#1C1C1C]/10 text-[#1C1C1C] py-3 px-6 rounded-[12px] font-medium hover:bg-[#1C1C1C]/20 transition-colors"
               >
                 Re-analyze
               </button>
               <button
                 onClick={handleConfirmCondition}
                 disabled={!selectedCondition}
-                className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 bg-[#1C1C1C] text-white py-3 px-6 rounded-[12px] font-medium hover:bg-black disabled:bg-[#1C1C1C]/30 disabled:cursor-not-allowed transition-colors"
               >
                 Confirm Condition
               </button>
