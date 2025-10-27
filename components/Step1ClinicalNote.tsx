@@ -74,9 +74,25 @@ export const Step1ClinicalNote = () => {
 
         {/* Clinical Note Input */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Patient Clinical Note
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Patient Clinical Note
+            </label>
+            <button
+              onClick={() => {
+                const exampleNote = `Patient presents with polyuria and polydipsia.
+Blood glucose: 8.5 mmol/L
+HbA1c: 7.8%
+History of Type 2 Diabetes Mellitus
+Currently on Metformin 850mg BD`;
+                setNote(exampleNote);
+              }}
+              disabled={isAnalyzing || detectedConditions.length > 0}
+              className="text-sm text-primary-600 hover:text-primary-700 font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
+            >
+              Load Example Note
+            </button>
+          </div>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
