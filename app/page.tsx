@@ -10,6 +10,7 @@ import { Step3TreatmentProtocol } from '@/components/Step3TreatmentProtocol';
 import { Step4Medication } from '@/components/Step4Medication';
 import { Step5FinalClaim } from '@/components/Step5FinalClaim';
 import { SplashScreen } from '@/components/SplashScreen';
+import { LandingPage } from '@/components/LandingPage';
 import { loadConditionsData, loadMedicineData, loadTreatmentData } from '@/lib/dataLoader';
 import { Loader2 } from 'lucide-react';
 
@@ -24,6 +25,7 @@ export default function Home() {
   } = useAppStore();
 
   const [showSplash, setShowSplash] = useState(true);
+  const [showLanding, setShowLanding] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,7 +60,28 @@ export default function Home() {
   }, []);
 
   if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+    return (
+      <SplashScreen
+        onComplete={() => {
+          setShowSplash(false);
+          setShowLanding(true);
+        }}
+      />
+    );
+  }
+
+  if (showLanding && !currentCase) {
+    return (
+      <LandingPage
+        onNewCase={() => {
+          createNewCase();
+          setShowLanding(false);
+        }}
+        onViewCases={() => {
+          alert('View Cases functionality coming soon!');
+        }}
+      />
+    );
   }
 
   if (loading) {
@@ -94,27 +117,7 @@ export default function Home() {
   }
 
   if (!currentCase) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="text-center max-w-md p-8 bg-white rounded-lg shadow-lg">
-          <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-white font-bold text-3xl">S</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome to SaluLink
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Chronic Treatment Documentation powered by Authi 1.0
-          </p>
-          <button
-            onClick={createNewCase}
-            className="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium"
-          >
-            Start New Case
-          </button>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

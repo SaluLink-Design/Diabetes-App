@@ -67,18 +67,24 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
       <div className="absolute bottom-16 left-0 right-0 flex justify-center">
         <div className="flex gap-2">
           <div
-            className={`w-2 h-2 rounded-full bg-primary-600 transition-opacity duration-300 ${
-              phase === 'black' ? 'opacity-100' : 'opacity-30'
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              phase === 'black'
+                ? 'opacity-100 bg-gray-900'
+                : 'opacity-30 bg-[#38b6ff]'
             }`}
           />
           <div
-            className={`w-2 h-2 rounded-full bg-primary-600 transition-opacity duration-300 ${
-              phase === 'transition' ? 'opacity-100' : 'opacity-30'
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              phase === 'transition'
+                ? 'opacity-100 bg-gray-500'
+                : 'opacity-30 bg-[#38b6ff]'
             }`}
           />
           <div
-            className={`w-2 h-2 rounded-full bg-primary-600 transition-opacity duration-300 ${
-              phase === 'blue' ? 'opacity-100' : 'opacity-30'
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              phase === 'blue'
+                ? 'opacity-100 bg-[#38b6ff]'
+                : 'opacity-30 bg-gray-300'
             }`}
           />
         </div>
