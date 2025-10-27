@@ -179,37 +179,10 @@ export const Step6ClaimSummary = () => {
               <h3 className="text-sm font-bold text-gray-700 mb-3">
                 SELECTED MEDICATIONS
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {currentCase.selectedMedications.map((med: any, index: number) => (
-                  <div key={index} className="bg-gray-50 p-3 rounded">
-                    <p className="font-medium text-gray-900">{med.medicineNameStrength}</p>
-                    <div className="mt-2 space-y-2 text-sm text-gray-600">
-                      <div>
-                        <span className="font-medium">Class:</span> {med.medicineClass}
-                      </div>
-                      <div>
-                        <span className="font-medium">Active Ingredient:</span> {med.activeIngredient}
-                      </div>
-                      {med.plansExcluded?.includes('Core') &&
-                       med.plansExcluded?.includes('Priority') &&
-                       med.plansExcluded?.includes('Saver') ? (
-                        <div>
-                          <span className="font-medium">CDA Amount:</span> {med.cdaExecutiveComprehensive}
-                          <span className="text-xs text-gray-500 ml-2">
-                            (Executive/Comprehensive only)
-                          </span>
-                        </div>
-                      ) : (
-                        <>
-                          <div>
-                            <span className="font-medium">CDA (Core/Priority/Saver):</span> {med.cdaCorePrioritySaver}
-                          </div>
-                          <div>
-                            <span className="font-medium">CDA (Executive/Comprehensive):</span> {med.cdaExecutiveComprehensive}
-                          </div>
-                        </>
-                      )}
-                    </div>
+                  <div key={index} className="text-sm text-gray-900">
+                    • {med.medicineNameStrength}
                   </div>
                 ))}
               </div>
