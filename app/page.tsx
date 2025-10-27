@@ -9,6 +9,7 @@ import { Step2IcdMapping } from '@/components/Step2IcdMapping';
 import { Step3TreatmentProtocol } from '@/components/Step3TreatmentProtocol';
 import { Step4Medication } from '@/components/Step4Medication';
 import { Step5FinalClaim } from '@/components/Step5FinalClaim';
+import { SplashScreen } from '@/components/SplashScreen';
 import { loadConditionsData, loadMedicineData, loadTreatmentData } from '@/lib/dataLoader';
 import { Loader2 } from 'lucide-react';
 
@@ -22,6 +23,7 @@ export default function Home() {
     createNewCase,
   } = useAppStore();
 
+  const [showSplash, setShowSplash] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +56,10 @@ export default function Home() {
 
     loadData();
   }, []);
+
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
 
   if (loading) {
     return (
