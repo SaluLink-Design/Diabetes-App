@@ -5,7 +5,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { Medicine } from '@/types';
 import { FileText, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 
-export const Step6ChronicNote = () => {
+export const Step5ChronicNote = () => {
   const { currentCase, selectedPlan, updateCurrentCase, nextStep, previousStep } = useAppStore();
   const [selectedMedication, setSelectedMedication] = useState<Medicine | null>(null);
   const [medicationBrief, setMedicationBrief] = useState('');
@@ -68,7 +68,7 @@ This medication has been prescribed for the management of ${currentCase?.confirm
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Step 6: Chronic Registration Note
+            Step 5: Chronic Registration Note
           </h2>
           <p className="text-gray-600">
             Select a medication to generate a brief description, then add additional clinical notes.

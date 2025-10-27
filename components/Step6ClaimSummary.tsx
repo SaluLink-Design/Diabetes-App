@@ -5,7 +5,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { exportCaseToPDF } from '@/lib/pdfExport';
 import { FileText, Download, Save, CheckCircle2 } from 'lucide-react';
 
-export const Step7ClaimSummary = () => {
+export const Step6ClaimSummary = () => {
   const { currentCase, updateCurrentCase, saveCase, previousStep, createNewCase } = useAppStore();
   const [saved, setSaved] = useState(false);
 
@@ -37,7 +37,7 @@ export const Step7ClaimSummary = () => {
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Step 7: Claim Summary and Export
+            Step 6: Claim Summary and Export
           </h2>
           <p className="text-gray-600">
             Review the complete case documentation including all selected items and export your claim.
@@ -207,33 +207,6 @@ export const Step7ClaimSummary = () => {
                           <div>
                             <span className="font-medium">CDA (Executive/Comprehensive):</span> {med.cdaExecutiveComprehensive}
                           </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Optional Tests */}
-          {currentCase?.optionalTests && currentCase.optionalTests.length > 0 && (
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="text-sm font-bold text-gray-700 mb-3">
-                OPTIONAL TESTS SELECTED
-              </h3>
-              <div className="space-y-3">
-                {currentCase.optionalTests.map((test: any, index: number) => (
-                  <div key={index} className="bg-gray-50 p-3 rounded">
-                    <p className="font-medium text-gray-900">{test.description}</p>
-                    <div className="mt-1 text-sm text-gray-600">
-                      <span>Code: {test.code}</span>
-                      {' • '}
-                      <span>Quantity: {test.selectedQuantity || 1}</span>
-                      {test.specialistsCovered && (
-                        <>
-                          {' • '}
-                          <span>Specialists: {test.specialistsCovered}</span>
                         </>
                       )}
                     </div>

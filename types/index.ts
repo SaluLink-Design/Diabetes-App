@@ -65,7 +65,6 @@ export interface Case {
   selectedIcdCodes: Condition[];
   selectedTreatments: TreatmentItem[];
   selectedMedications: Medicine[];
-  optionalTests?: TreatmentItem[];
   chronicRegistrationNote: string;
   createdAt: Date;
   updatedAt: Date;

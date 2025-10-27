@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { Treatment, TreatmentItem, DocumentFile } from '@/types';
-import { FileText, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { FileText, CheckCircle2, AlertTriangle, ArrowRight, SkipForward } from 'lucide-react';
 import { ProcedureQuantityControl } from './ProcedureQuantityControl';
 import { DocumentationUpload } from './DocumentationUpload';
 
@@ -144,9 +144,17 @@ export const Step3TreatmentProtocol = () => {
     setCurrentView('ongoing');
   };
 
+  const handleSkipOngoing = () => {
+    const allSelected = [...selectedDiagnostic];
+    updateCurrentCase({
+      selectedTreatments: allSelected,
+    });
+    nextStep();
+  };
+
   const handleConfirm = () => {
     if (selectedOngoing.length === 0) {
-      alert('Please select at least one ongoing management procedure.');
+      alert('Please select at least one ongoing management procedure or click "Skip" to proceed.');
       return;
     }
 
@@ -184,7 +192,7 @@ export const Step3TreatmentProtocol = () => {
           <p className="text-gray-600">
             {currentView === 'diagnostic'
               ? 'Select diagnostic procedures, set quantities, and add documentation.'
-              : 'Select ongoing management procedures, set quantities, and add documentation.'}
+              : 'Select ongoing management procedures (optional), set quantities, and add documentation. You can skip this section if not needed.'}
           </p>
         </div>
 
@@ -336,6 +344,19 @@ export const Step3TreatmentProtocol = () => {
 
         {currentView === 'ongoing' && (
           <div className="mb-8">
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-semibold mb-1">Ongoing Management is Optional</p>
+                  <p>
+                    You can select procedures from the ongoing management basket or skip this section
+                    entirely by clicking the "Skip Ongoing Management" button to proceed directly to medication selection.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-green-500">
               <h3 className="text-lg font-bold text-gray-900">Ongoing Management Basket</h3>
               <span className="text-sm text-gray-600 bg-green-100 px-3 py-1 rounded-full font-medium">
@@ -445,13 +466,22 @@ export const Step3TreatmentProtocol = () => {
               <ArrowRight className="w-5 h-5" />
             </button>
           ) : (
-            <button
-              onClick={handleConfirm}
-              disabled={selectedOngoing.length === 0}
-              className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              Confirm Treatment Selection
-            </button>
+            <>
+              <button
+                onClick={handleSkipOngoing}
+                className="flex-1 bg-gray-400 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-500 transition-colors flex items-center justify-center gap-2"
+              >
+                <SkipForward className="w-5 h-5" />
+                Skip Ongoing Management
+              </button>
+              <button
+                onClick={handleConfirm}
+                disabled={selectedOngoing.length === 0}
+                className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                Confirm Treatment Selection
+              </button>
+            </>
           )}
         </div>
       </div>
