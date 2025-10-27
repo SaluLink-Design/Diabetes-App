@@ -15,7 +15,7 @@ export const WorkflowProgress = () => {
   const { currentStep } = useAppStore();
 
   return (
-    <div className="bg-white border-b border-[rgba(28,28,28,0.1)] px-6 py-4">
+    <div className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between">
           {WORKFLOW_STEPS.map((step, index) => (
@@ -26,8 +26,8 @@ export const WorkflowProgress = () => {
                     currentStep > step.step
                       ? 'bg-green-500 border-green-500'
                       : currentStep === step.step
-                      ? 'bg-[#1C1C1C] border-[#1C1C1C]'
-                      : 'bg-white border-[rgba(28,28,28,0.2)]'
+                      ? 'bg-primary-500 border-primary-500'
+                      : 'bg-white border-gray-300'
                   }`}
                 >
                   {currentStep > step.step ? (
@@ -37,7 +37,7 @@ export const WorkflowProgress = () => {
                       className={`text-sm font-bold ${
                         currentStep === step.step
                           ? 'text-white'
-                          : 'text-[#1C1C1C]/40'
+                          : 'text-gray-400'
                       }`}
                     >
                       {step.step}
@@ -48,8 +48,8 @@ export const WorkflowProgress = () => {
                   <p
                     className={`text-sm font-medium ${
                       currentStep >= step.step
-                        ? 'text-[#1C1C1C]'
-                        : 'text-[#1C1C1C]/40'
+                        ? 'text-gray-900'
+                        : 'text-gray-400'
                     }`}
                   >
                     {step.title}
@@ -61,7 +61,7 @@ export const WorkflowProgress = () => {
                   className={`flex-1 h-0.5 mx-4 ${
                     currentStep > step.step
                       ? 'bg-green-500'
-                      : 'bg-[rgba(28,28,28,0.2)]'
+                      : 'bg-gray-300'
                   }`}
                 />
               )}
