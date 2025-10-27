@@ -63,6 +63,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       selectedIcdCodes: [],
       selectedTreatments: [],
       selectedMedications: [],
+      optionalTests: undefined,
       chronicRegistrationNote: '',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -96,6 +97,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         selectedIcdCodes: currentCase.selectedIcdCodes || [],
         selectedTreatments: currentCase.selectedTreatments || [],
         selectedMedications: currentCase.selectedMedications || [],
+        optionalTests: currentCase.optionalTests,
         chronicRegistrationNote: currentCase.chronicRegistrationNote || '',
         createdAt: currentCase.createdAt || new Date(),
         updatedAt: new Date(),
@@ -140,7 +142,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   
   nextStep: () => {
     const { currentStep } = get();
-    if (currentStep < 5) {
+    if (currentStep < 7) {
       set({ currentStep: currentStep + 1 });
     }
   },

@@ -8,7 +8,9 @@ const WORKFLOW_STEPS = [
   { step: 2, title: 'ICD-10 Mapping' },
   { step: 3, title: 'Treatment Protocol' },
   { step: 4, title: 'Medication Selection' },
-  { step: 5, title: 'Final Documentation' },
+  { step: 5, title: 'Optional Tests' },
+  { step: 6, title: 'Chronic Note' },
+  { step: 7, title: 'Claim Summary' },
 ];
 
 export const WorkflowProgress = () => {

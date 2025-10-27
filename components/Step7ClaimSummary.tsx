@@ -5,17 +5,11 @@ import { useAppStore } from '@/store/useAppStore';
 import { exportCaseToPDF } from '@/lib/pdfExport';
 import { FileText, Download, Save, CheckCircle2 } from 'lucide-react';
 
-export const Step5FinalClaim = () => {
+export const Step7ClaimSummary = () => {
   const { currentCase, updateCurrentCase, saveCase, previousStep, createNewCase } = useAppStore();
-  const [chronicNote, setChronicNote] = useState(
-    currentCase?.chronicRegistrationNote || ''
-  );
   const [saved, setSaved] = useState(false);
 
   const handleSaveCase = () => {
-    updateCurrentCase({
-      chronicRegistrationNote: chronicNote,
-    });
     saveCase();
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
@@ -23,13 +17,7 @@ export const Step5FinalClaim = () => {
 
   const handleExportPDF = () => {
     if (!currentCase || !currentCase.id) return;
-
-    const completeCase = {
-      ...currentCase,
-      chronicRegistrationNote: chronicNote,
-    };
-
-    exportCaseToPDF(completeCase as any);
+    exportCaseToPDF(currentCase as any);
   };
 
   const handleNewCase = () => {
@@ -49,10 +37,10 @@ export const Step5FinalClaim = () => {
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Step 5: Final Claim Documentation and Export
+            Step 7: Claim Summary and Export
           </h2>
           <p className="text-gray-600">
-            Review the complete case documentation and add a chronic registration note before exporting.
+            Review the complete case documentation including all selected items and export your claim.
           </p>
         </div>
 
@@ -228,18 +216,44 @@ export const Step5FinalClaim = () => {
             </div>
           )}
 
+          {/* Optional Tests */}
+          {currentCase?.optionalTests && currentCase.optionalTests.length > 0 && (
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h3 className="text-sm font-bold text-gray-700 mb-3">
+                OPTIONAL TESTS SELECTED
+              </h3>
+              <div className="space-y-3">
+                {currentCase.optionalTests.map((test: any, index: number) => (
+                  <div key={index} className="bg-gray-50 p-3 rounded">
+                    <p className="font-medium text-gray-900">{test.description}</p>
+                    <div className="mt-1 text-sm text-gray-600">
+                      <span>Code: {test.code}</span>
+                      {' • '}
+                      <span>Quantity: {test.selectedQuantity || 1}</span>
+                      {test.specialistsCovered && (
+                        <>
+                          {' • '}
+                          <span>Specialists: {test.specialistsCovered}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Chronic Registration Note */}
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h3 className="text-sm font-bold text-gray-700 mb-3">
-              CHRONIC REGISTRATION NOTE
-            </h3>
-            <textarea
-              value={chronicNote}
-              onChange={(e) => setChronicNote(e.target.value)}
-              placeholder="Enter chronic medication registration note..."
-              className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            />
-          </div>
+          {currentCase?.chronicRegistrationNote && (
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h3 className="text-sm font-bold text-gray-700 mb-3">
+                CHRONIC REGISTRATION NOTE
+              </h3>
+              <div className="bg-gray-50 p-4 rounded whitespace-pre-wrap text-sm text-gray-900">
+                {currentCase.chronicRegistrationNote}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Success Message */}

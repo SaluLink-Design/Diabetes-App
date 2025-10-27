@@ -8,7 +8,9 @@ import { Step1ClinicalNote } from '@/components/Step1ClinicalNote';
 import { Step2IcdMapping } from '@/components/Step2IcdMapping';
 import { Step3TreatmentProtocol } from '@/components/Step3TreatmentProtocol';
 import { Step4Medication } from '@/components/Step4Medication';
-import { Step5FinalClaim } from '@/components/Step5FinalClaim';
+import { Step5OptionalTests } from '@/components/Step5OptionalTests';
+import { Step6ChronicNote } from '@/components/Step6ChronicNote';
+import { Step7ClaimSummary } from '@/components/Step7ClaimSummary';
 import { SplashScreen } from '@/components/SplashScreen';
 import { LandingPage } from '@/components/LandingPage';
 import { loadConditionsData, loadMedicineData, loadTreatmentData } from '@/lib/dataLoader';
@@ -122,7 +124,9 @@ export default function Home() {
             {currentStep === 2 && <Step2IcdMapping />}
             {currentStep === 3 && <Step3TreatmentProtocol />}
             {currentStep === 4 && <Step4Medication />}
-            {currentStep === 5 && <Step5FinalClaim />}
+            {currentStep === 5 && <Step5OptionalTests />}
+            {currentStep === 6 && <Step6ChronicNote />}
+            {currentStep === 7 && <Step7ClaimSummary />}
           </div>
         </div>
 
