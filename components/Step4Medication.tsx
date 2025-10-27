@@ -176,25 +176,42 @@ export const Step4Medication = () => {
                             )}
                           </div>
 
-                          <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                          <div className="mt-3 space-y-2 text-sm">
                             <div>
                               <span className="text-gray-600">Active Ingredient:</span>
                               <p className="font-medium text-gray-900">
                                 {medicine.activeIngredient}
                               </p>
                             </div>
-                            <div>
-                              <span className="text-gray-600">CDA (Core/Priority/Saver):</span>
-                              <p className="font-medium text-gray-900">
-                                {medicine.cdaCorePrioritySaver}
-                              </p>
-                            </div>
-                            <div className="col-span-2">
-                              <span className="text-gray-600">CDA (Executive/Comprehensive):</span>
-                              <p className="font-medium text-gray-900">
-                                {medicine.cdaExecutiveComprehensive}
-                              </p>
-                            </div>
+
+                            {medicine.plansExcluded?.includes('Core') &&
+                             medicine.plansExcluded?.includes('Priority') &&
+                             medicine.plansExcluded?.includes('Saver') ? (
+                              <div>
+                                <span className="text-gray-600">CDA Amount:</span>
+                                <p className="font-medium text-gray-900">
+                                  {medicine.cdaExecutiveComprehensive}
+                                  <span className="text-xs text-gray-500 ml-2">
+                                    (Executive/Comprehensive only)
+                                  </span>
+                                </p>
+                              </div>
+                            ) : (
+                              <>
+                                <div>
+                                  <span className="text-gray-600">CDA (Core/Priority/Saver):</span>
+                                  <p className="font-medium text-gray-900">
+                                    {medicine.cdaCorePrioritySaver}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">CDA (Executive/Comprehensive):</span>
+                                  <p className="font-medium text-gray-900">
+                                    {medicine.cdaExecutiveComprehensive}
+                                  </p>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       </label>
