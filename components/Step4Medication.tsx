@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { Medicine, MedicalPlan } from '@/types';
-import { Filter, CheckCircle2 } from 'lucide-react';
+import { Filter, CheckCircle2, Eye, X, ChevronRight } from 'lucide-react';
 
 const MEDICAL_PLANS: MedicalPlan[] = [
   'KeyCare',
@@ -32,6 +32,7 @@ export const Step4Medication = () => {
   const [groupedMedicines, setGroupedMedicines] = useState<
     Map<string, Medicine[]>
   >(new Map());
+  const [viewingClass, setViewingClass] = useState<string | null>(null);
 
   useEffect(() => {
     if (currentCase?.confirmedCondition) {
@@ -40,7 +41,6 @@ export const Step4Medication = () => {
       );
       setAvailableMedicines(medicines);
 
-      // Group by medicine class
       const grouped = new Map<string, Medicine[]>();
       medicines.forEach((med) => {
         if (!grouped.has(med.medicineClass)) {
@@ -84,6 +84,10 @@ export const Step4Medication = () => {
     nextStep();
   };
 
+  const getSelectedCountForClass = (medicineClass: string): number => {
+    return selectedMedicines.filter((m) => m.medicineClass === medicineClass).length;
+  };
+
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-lg p-8">
@@ -92,11 +96,10 @@ export const Step4Medication = () => {
             Step 4: Medication Mapping and Selection
           </h2>
           <p className="text-gray-600">
-            Select appropriate medications for the chronic condition. Medications are filtered by the selected medical plan.
+            Select appropriate medications for the chronic condition. Click "View" to explore medications in each class.
           </p>
         </div>
 
-        {/* Plan Filter */}
         <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="w-5 h-5 text-gray-600" />
@@ -121,16 +124,95 @@ export const Step4Medication = () => {
           </div>
         </div>
 
-        {/* Medications by Class */}
-        <div className="space-y-6 mb-8">
-          {Array.from(groupedMedicines.entries()).map(([medicineClass, medicines]) => (
-            <div key={medicineClass} className="border border-gray-200 rounded-lg p-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                {medicineClass}
-              </h3>
+        <div className="space-y-3 mb-8">
+          {Array.from(groupedMedicines.entries()).map(([medicineClass, medicines]) => {
+            const selectedCount = getSelectedCountForClass(medicineClass);
 
+            return (
+              <div
+                key={medicineClass}
+                className="border-2 border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">
+                      {medicineClass}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {medicines.length} medication{medicines.length !== 1 ? 's' : ''} available
+                      {selectedCount > 0 && (
+                        <span className="ml-2 text-primary-600 font-medium">
+                          • {selectedCount} selected
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setViewingClass(medicineClass)}
+                    className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {selectedMedicines.length > 0 && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm font-medium text-green-900 mb-2">
+              Selected Medications ({selectedMedicines.length})
+            </p>
+            <div className="space-y-1">
+              {selectedMedicines.map((med) => (
+                <div key={med.medicineNameStrength} className="text-sm text-green-800">
+                  • {med.medicineNameStrength} ({med.medicineClass})
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-4">
+          <button
+            onClick={previousStep}
+            className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={selectedMedicines.length === 0}
+            className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          >
+            Confirm Medication Selection
+          </button>
+        </div>
+      </div>
+
+      {viewingClass && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">{viewingClass}</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {groupedMedicines.get(viewingClass)?.length} medication(s) • {selectedPlan} Plan
+                </p>
+              </div>
+              <button
+                onClick={() => setViewingClass(null)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-3">
-                {medicines.map((medicine) => {
+                {groupedMedicines.get(viewingClass)?.map((medicine) => {
                   const isSelected = selectedMedicines.some(
                     (m) => m.medicineNameStrength === medicine.medicineNameStrength
                   );
@@ -220,43 +302,18 @@ export const Step4Medication = () => {
                 })}
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Selected Medications Summary */}
-        {selectedMedicines.length > 0 && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm font-medium text-green-900 mb-2">
-              Selected Medications ({selectedMedicines.length})
-            </p>
-            <div className="space-y-1">
-              {selectedMedicines.map((med) => (
-                <div key={med.medicineNameStrength} className="text-sm text-green-800">
-                  • {med.medicineNameStrength} ({med.medicineClass})
-                </div>
-              ))}
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setViewingClass(null)}
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 px-6 rounded-lg font-medium transition-colors"
+              >
+                Close
+              </button>
             </div>
           </div>
-        )}
-
-        {/* Navigation Buttons */}
-        <div className="flex gap-4">
-          <button
-            onClick={previousStep}
-            className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleConfirm}
-            disabled={selectedMedicines.length === 0}
-            className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            Confirm Medication Selection
-          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 };
-
