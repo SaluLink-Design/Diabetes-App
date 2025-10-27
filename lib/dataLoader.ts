@@ -45,13 +45,38 @@ export const loadMedicineData = async (): Promise<Medicine[]> => {
     if (row.length >= 6) {
       const medicineNameStrength = row[5]?.trim() || '';
       const plansExcluded: string[] = [];
-      
+
       // Check for plan exclusions in the medicine name/strength field
       if (medicineNameStrength.includes('Not available on KeyCare')) {
         plansExcluded.push('KeyCare');
       }
       if (medicineNameStrength.includes('Only Executive and Comprehensive')) {
         plansExcluded.push('Core', 'Priority', 'Saver', 'KeyCare');
+      }
+      if (medicineNameStrength.includes('Not available on Core')) {
+        plansExcluded.push('Core');
+      }
+      if (medicineNameStrength.includes('Not available on Priority')) {
+        plansExcluded.push('Priority');
+      }
+      if (medicineNameStrength.includes('Not available on Saver')) {
+        plansExcluded.push('Saver');
+      }
+
+      // Check CDA amounts to determine plan compatibility
+      const cdaCore = row[1]?.trim() || '';
+      const cdaExecutive = row[2]?.trim() || '';
+
+      // If CDA for Core/Priority/Saver is significantly different from Executive/Comprehensive
+      // it might indicate specialty medication
+      if (cdaCore && cdaExecutive) {
+        const coreAmount = parseFloat(cdaCore.replace(/[^0-9.]/g, ''));
+        const execAmount = parseFloat(cdaExecutive.replace(/[^0-9.]/g, ''));
+
+        // If executive amount is significantly higher, it might be specialty-only
+        if (execAmount > coreAmount * 2) {
+          // This could indicate a specialty medication
+        }
       }
       
       medicines.push({

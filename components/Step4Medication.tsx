@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { Medicine, MedicalPlan } from '@/types';
-import { Filter, CheckCircle2, Eye, X, ChevronRight } from 'lucide-react';
+import { Filter, CheckCircle2, Eye, X, AlertCircle, Info } from 'lucide-react';
 
 const MEDICAL_PLANS: MedicalPlan[] = [
   'KeyCare',
@@ -13,6 +13,15 @@ const MEDICAL_PLANS: MedicalPlan[] = [
   'Executive',
   'Comprehensive',
 ];
+
+const PLAN_DESCRIPTIONS: Record<MedicalPlan, string> = {
+  KeyCare: 'Basic coverage - Limited medication formulary',
+  Core: 'Standard coverage - General medications only',
+  Priority: 'Enhanced coverage - Broader medication access',
+  Saver: 'Value coverage - Cost-effective options',
+  Executive: 'Premium coverage - Includes specialty medications',
+  Comprehensive: 'Full coverage - All medications available',
+};
 
 export const Step4Medication = () => {
   const {
@@ -52,6 +61,22 @@ export const Step4Medication = () => {
     }
   }, [currentCase?.confirmedCondition, allMedicines]);
 
+  useEffect(() => {
+    const incompatibleMeds = selectedMedicines.filter(
+      (med) => !isMedicineAvailable(med)
+    );
+
+    if (incompatibleMeds.length > 0) {
+      const medNames = incompatibleMeds.map((m) => m.medicineNameStrength).join(', ');
+      alert(
+        `The following medications are not available on ${selectedPlan} plan and have been deselected:\n\n${medNames}`
+      );
+      setSelectedMedicines(
+        selectedMedicines.filter((med) => isMedicineAvailable(med))
+      );
+    }
+  }, [selectedPlan]);
+
   const handleToggleMedicine = (medicine: Medicine) => {
     const isSelected = selectedMedicines.some(
       (m) => m.medicineNameStrength === medicine.medicineNameStrength
@@ -78,6 +103,15 @@ export const Step4Medication = () => {
       return;
     }
 
+    const hasIncompatible = selectedMedicines.some(
+      (med) => !isMedicineAvailable(med)
+    );
+
+    if (hasIncompatible) {
+      alert('Please remove medications that are not available on the selected plan.');
+      return;
+    }
+
     updateCurrentCase({
       selectedMedications: selectedMedicines,
     });
@@ -86,6 +120,31 @@ export const Step4Medication = () => {
 
   const getSelectedCountForClass = (medicineClass: string): number => {
     return selectedMedicines.filter((m) => m.medicineClass === medicineClass).length;
+  };
+
+  const getAvailableCountForClass = (medicineClass: string): number => {
+    const medicines = groupedMedicines.get(medicineClass) || [];
+    return medicines.filter((m) => isMedicineAvailable(m)).length;
+  };
+
+  const getTotalAvailableMedicines = (): number => {
+    return availableMedicines.filter((m) => isMedicineAvailable(m)).length;
+  };
+
+  const getTotalRestrictedMedicines = (): number => {
+    return availableMedicines.filter((m) => !isMedicineAvailable(m)).length;
+  };
+
+  const getRestrictionReason = (medicine: Medicine): string => {
+    if (medicine.plansExcluded?.includes('Core') &&
+        medicine.plansExcluded?.includes('Priority') &&
+        medicine.plansExcluded?.includes('Saver')) {
+      return 'This is a specialty medication available only on Executive and Comprehensive plans.';
+    }
+    if (medicine.plansExcluded?.includes('KeyCare')) {
+      return 'This medication is not covered under KeyCare plan.';
+    }
+    return `This medication is not available on ${selectedPlan} plan. Please select a higher-tier plan for access.`;
   };
 
   return (
@@ -104,7 +163,7 @@ export const Step4Medication = () => {
           <div className="flex items-center gap-2 mb-3">
             <Filter className="w-5 h-5 text-gray-600" />
             <label className="text-sm font-medium text-gray-700">
-              Filter by Medical Plan
+              Select Medical Plan
             </label>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -112,21 +171,68 @@ export const Step4Medication = () => {
               <button
                 key={plan}
                 onClick={() => setSelectedPlan(plan)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`group relative px-4 py-2 rounded-lg font-medium transition-all ${
                   selectedPlan === plan
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:border-primary-300'
+                    ? 'bg-primary-600 text-white shadow-md'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:border-primary-300 hover:shadow-sm'
                 }`}
+                title={PLAN_DESCRIPTIONS[plan]}
               >
                 {plan}
+                {selectedPlan !== plan && (
+                  <div className="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded shadow-lg z-10">
+                    {PLAN_DESCRIPTIONS[plan]}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                  </div>
+                )}
               </button>
             ))}
+          </div>
+          <div className="mt-3 flex items-start gap-2 text-sm text-gray-600">
+            <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <p>
+              <span className="font-medium">Current Plan: {selectedPlan}</span> - {PLAN_DESCRIPTIONS[selectedPlan]}
+            </p>
+          </div>
+        </div>
+
+        {getTotalRestrictedMedicines() > 0 && (
+          <div className="mb-6 p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-amber-900 mb-1">
+                  Plan Restrictions Apply
+                </p>
+                <p className="text-sm text-amber-800">
+                  {getTotalRestrictedMedicines()} medication(s) are not available on <span className="font-semibold">{selectedPlan}</span> plan.
+                  These will be shown as disabled. Consider selecting a higher-tier plan for full access.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="mb-6 grid grid-cols-3 gap-4">
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs text-blue-600 font-medium mb-1">Total Medications</p>
+            <p className="text-2xl font-bold text-blue-900">{availableMedicines.length}</p>
+          </div>
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-xs text-green-600 font-medium mb-1">Available on {selectedPlan}</p>
+            <p className="text-2xl font-bold text-green-900">{getTotalAvailableMedicines()}</p>
+          </div>
+          <div className="p-4 bg-primary-50 border border-primary-200 rounded-lg">
+            <p className="text-xs text-primary-600 font-medium mb-1">Selected</p>
+            <p className="text-2xl font-bold text-primary-900">{selectedMedicines.length}</p>
           </div>
         </div>
 
         <div className="space-y-3 mb-8">
           {Array.from(groupedMedicines.entries()).map(([medicineClass, medicines]) => {
             const selectedCount = getSelectedCountForClass(medicineClass);
+            const availableCount = getAvailableCountForClass(medicineClass);
+            const totalCount = medicines.length;
 
             return (
               <div
@@ -138,14 +244,22 @@ export const Step4Medication = () => {
                     <h3 className="text-lg font-bold text-gray-900 mb-1">
                       {medicineClass}
                     </h3>
-                    <p className="text-sm text-gray-600">
-                      {medicines.length} medication{medicines.length !== 1 ? 's' : ''} available
+                    <div className="flex items-center gap-3 text-sm text-gray-600">
+                      <span>
+                        {availableCount} of {totalCount} available
+                      </span>
                       {selectedCount > 0 && (
-                        <span className="ml-2 text-primary-600 font-medium">
+                        <span className="text-primary-600 font-medium">
                           • {selectedCount} selected
                         </span>
                       )}
-                    </p>
+                      {availableCount < totalCount && (
+                        <span className="inline-flex items-center gap-1 text-amber-600">
+                          <AlertCircle className="w-3 h-3" />
+                          {totalCount - availableCount} restricted
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <button
                     onClick={() => setViewingClass(medicineClass)}
@@ -199,7 +313,7 @@ export const Step4Medication = () => {
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">{viewingClass}</h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  {groupedMedicines.get(viewingClass)?.length} medication(s) • {selectedPlan} Plan
+                  {getAvailableCountForClass(viewingClass)} of {groupedMedicines.get(viewingClass)?.length} available on {selectedPlan} Plan
                 </p>
               </div>
               <button
@@ -223,7 +337,7 @@ export const Step4Medication = () => {
                       key={medicine.medicineNameStrength}
                       className={`border-2 rounded-lg p-4 transition-all ${
                         !isAvailable
-                          ? 'border-gray-200 bg-gray-50 opacity-60'
+                          ? 'border-gray-300 bg-gray-100 opacity-75'
                           : isSelected
                           ? 'border-primary-500 bg-primary-50'
                           : 'border-gray-200 hover:border-primary-300'
@@ -244,13 +358,21 @@ export const Step4Medication = () => {
                         <div className="ml-3 flex-1">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <p className="font-medium text-gray-900">
+                              <p className={`font-medium ${isAvailable ? 'text-gray-900' : 'text-gray-600'}`}>
                                 {medicine.medicineNameStrength}
                               </p>
                               {!isAvailable && (
-                                <span className="inline-block mt-1 px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded">
-                                  Not available on {selectedPlan}
-                                </span>
+                                <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded flex items-start gap-2">
+                                  <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                                  <div>
+                                    <p className="text-xs font-semibold text-amber-900">
+                                      Not Available on {selectedPlan}
+                                    </p>
+                                    <p className="text-xs text-amber-700 mt-1">
+                                      {getRestrictionReason(medicine)}
+                                    </p>
+                                  </div>
+                                </div>
                               )}
                             </div>
                             {isSelected && (
@@ -261,7 +383,7 @@ export const Step4Medication = () => {
                           <div className="mt-3 space-y-2 text-sm">
                             <div>
                               <span className="text-gray-600">Active Ingredient:</span>
-                              <p className="font-medium text-gray-900">
+                              <p className={`font-medium ${isAvailable ? 'text-gray-900' : 'text-gray-600'}`}>
                                 {medicine.activeIngredient}
                               </p>
                             </div>
@@ -271,7 +393,7 @@ export const Step4Medication = () => {
                              medicine.plansExcluded?.includes('Saver') ? (
                               <div>
                                 <span className="text-gray-600">CDA Amount:</span>
-                                <p className="font-medium text-gray-900">
+                                <p className={`font-medium ${isAvailable ? 'text-gray-900' : 'text-gray-600'}`}>
                                   {medicine.cdaExecutiveComprehensive}
                                   <span className="text-xs text-gray-500 ml-2">
                                     (Executive/Comprehensive only)
@@ -282,13 +404,13 @@ export const Step4Medication = () => {
                               <>
                                 <div>
                                   <span className="text-gray-600">CDA (Core/Priority/Saver):</span>
-                                  <p className="font-medium text-gray-900">
+                                  <p className={`font-medium ${isAvailable ? 'text-gray-900' : 'text-gray-600'}`}>
                                     {medicine.cdaCorePrioritySaver}
                                   </p>
                                 </div>
                                 <div>
                                   <span className="text-gray-600">CDA (Executive/Comprehensive):</span>
-                                  <p className="font-medium text-gray-900">
+                                  <p className={`font-medium ${isAvailable ? 'text-gray-900' : 'text-gray-600'}`}>
                                     {medicine.cdaExecutiveComprehensive}
                                   </p>
                                 </div>
