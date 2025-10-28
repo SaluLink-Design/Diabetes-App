@@ -14,6 +14,7 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { LandingPage } from '@/components/LandingPage';
 import { loadConditionsData, loadMedicineData, loadTreatmentData } from '@/lib/dataLoader';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   const {
@@ -131,9 +132,13 @@ export default function Home() {
         {/* Authi 1.0 Badge */}
         <div className="border-t border-gray-200 bg-white px-6 py-3">
           <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
-            <div className="w-6 h-6 bg-gradient-to-br from-primary-500 to-purple-600 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-xs">A</span>
-            </div>
+            <Image
+              src="/Authi.png"
+              alt="Authi Logo"
+              width={24}
+              height={24}
+              className="w-6 h-6 object-contain"
+            />
             <span>Powered by <span className="font-semibold text-primary-600">Authi 1.0</span></span>
           </div>
         </div>

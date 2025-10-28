@@ -25,9 +25,15 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
           </div>
 
           <div className="mb-12">
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-400 via-purple-300 to-blue-300 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-transparent to-blue-400/20"></div>
-              <span className="text-white font-bold text-5xl relative z-10">A</span>
+            <div className="w-24 h-24 mx-auto mb-8 flex items-center justify-center">
+              <Image
+                src="/Authi.png"
+                alt="Authi Logo"
+                width={96}
+                height={96}
+                priority
+                className="w-24 h-24 object-contain"
+              />
             </div>
             <h1 className="text-6xl font-bold text-gray-900 mb-4">
               Authi 1.0
