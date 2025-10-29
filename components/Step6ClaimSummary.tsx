@@ -189,8 +189,34 @@ export const Step6ClaimSummary = () => {
             </div>
           )}
 
-          {/* Chronic Registration Note */}
-          {currentCase?.chronicRegistrationNote && (
+          {/* Chronic Registration Notes */}
+          {currentCase?.chronicRegistrationNotes && currentCase.chronicRegistrationNotes.length > 0 && (
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h3 className="text-sm font-bold text-gray-700 mb-3">
+                CHRONIC REGISTRATION NOTES ({currentCase.chronicRegistrationNotes.length} MEDICATION{currentCase.chronicRegistrationNotes.length > 1 ? 'S' : ''})
+              </h3>
+              <div className="space-y-4">
+                {currentCase.chronicRegistrationNotes.map((note: any, index: number) => (
+                  <div key={index} className="bg-gray-50 p-4 rounded border border-gray-300">
+                    <div className="mb-3 pb-3 border-b border-gray-300">
+                      <p className="text-sm font-bold text-primary-700 mb-1">
+                        Medication {index + 1}: {note.medication.medicineNameStrength}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {note.medication.activeIngredient} • {note.medication.medicineClass}
+                      </p>
+                    </div>
+                    <div className="whitespace-pre-wrap text-sm text-gray-900">
+                      {note.fullNote}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Legacy Chronic Registration Note - for backwards compatibility */}
+          {currentCase?.chronicRegistrationNote && (!currentCase?.chronicRegistrationNotes || currentCase.chronicRegistrationNotes.length === 0) && (
             <div className="border border-gray-200 rounded-lg p-4">
               <h3 className="text-sm font-bold text-gray-700 mb-3">
                 CHRONIC REGISTRATION NOTE

@@ -57,6 +57,13 @@ export type MedicalPlan =
   | 'Executive' 
   | 'Comprehensive';
 
+export interface ChronicRegistrationNote {
+  medication: Medicine;
+  medicationBrief: string;
+  additionalNotes: string;
+  fullNote: string;
+}
+
 export interface Case {
   id: string;
   patientNote: string;
@@ -65,7 +72,8 @@ export interface Case {
   selectedIcdCodes: Condition[];
   selectedTreatments: TreatmentItem[];
   selectedMedications: Medicine[];
-  chronicRegistrationNote: string;
+  chronicRegistrationNote: string; // Deprecated - kept for backwards compatibility
+  chronicRegistrationNotes: ChronicRegistrationNote[];
   createdAt: Date;
   updatedAt: Date;
 }

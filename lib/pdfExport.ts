@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { Case, Condition, Medicine, TreatmentItem } from '@/types';
+import { Case, Condition, Medicine, TreatmentItem, ChronicRegistrationNote } from '@/types';
 
 export const exportCaseToPDF = (caseData: Case) => {
   const doc = new jsPDF();
@@ -123,8 +123,20 @@ export const exportCaseToPDF = (caseData: Case) => {
     yPosition += 3;
   }
 
-  // Chronic Registration Note
-  if (caseData.chronicRegistrationNote) {
+  // Chronic Registration Notes
+  if (caseData.chronicRegistrationNotes && caseData.chronicRegistrationNotes.length > 0) {
+    addText(`CHRONIC REGISTRATION NOTES (${caseData.chronicRegistrationNotes.length} MEDICATION${caseData.chronicRegistrationNotes.length > 1 ? 'S' : ''})`, 14, true);
+    yPosition += 2;
+
+    caseData.chronicRegistrationNotes.forEach((note: ChronicRegistrationNote, index: number) => {
+      addText(`Medication ${index + 1}: ${note.medication.medicineNameStrength}`, 12, true);
+      addText(`${note.medication.activeIngredient} • ${note.medication.medicineClass}`, 9);
+      yPosition += 2;
+      addText(note.fullNote, 10);
+      yPosition += 4;
+    });
+  } else if (caseData.chronicRegistrationNote) {
+    // Legacy support for old format
     addText('CHRONIC REGISTRATION NOTE', 14, true);
     yPosition += 2;
     addText(caseData.chronicRegistrationNote, 10);

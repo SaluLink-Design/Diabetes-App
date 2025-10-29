@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Case, Condition, Treatment, Medicine, TreatmentItem, MedicalPlan } from '@/types';
+import { Case, Condition, Treatment, Medicine, TreatmentItem, MedicalPlan, ChronicRegistrationNote } from '@/types';
 
 interface AppState {
   // Data
@@ -64,6 +64,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       selectedTreatments: [],
       selectedMedications: [],
       chronicRegistrationNote: '',
+      chronicRegistrationNotes: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -97,6 +98,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         selectedTreatments: currentCase.selectedTreatments || [],
         selectedMedications: currentCase.selectedMedications || [],
         chronicRegistrationNote: currentCase.chronicRegistrationNote || '',
+        chronicRegistrationNotes: currentCase.chronicRegistrationNotes || [],
         createdAt: currentCase.createdAt || new Date(),
         updatedAt: new Date(),
       };

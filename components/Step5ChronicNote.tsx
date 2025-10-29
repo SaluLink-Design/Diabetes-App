@@ -2,31 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import { Medicine } from '@/types';
-import { FileText, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
+import { Medicine, ChronicRegistrationNote } from '@/types';
+import { FileText, CheckCircle2, AlertCircle, ArrowRight, Edit2, Save } from 'lucide-react';
 
 export const Step5ChronicNote = () => {
   const { currentCase, selectedPlan, updateCurrentCase, nextStep, previousStep } = useAppStore();
-  const [selectedMedication, setSelectedMedication] = useState<Medicine | null>(null);
-  const [medicationBrief, setMedicationBrief] = useState('');
-  const [additionalNotes, setAdditionalNotes] = useState(
-    currentCase?.chronicRegistrationNote || ''
-  );
+  const [chronicNotes, setChronicNotes] = useState<ChronicRegistrationNote[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingNotes, setEditingNotes] = useState('');
 
   useEffect(() => {
     if (currentCase?.selectedMedications && currentCase.selectedMedications.length > 0) {
-      if (!selectedMedication) {
-        setSelectedMedication(currentCase.selectedMedications[0]);
+      // Initialize notes for all medications if not already present
+      if (currentCase.chronicRegistrationNotes && currentCase.chronicRegistrationNotes.length > 0) {
+        setChronicNotes(currentCase.chronicRegistrationNotes);
+      } else {
+        const initialNotes = currentCase.selectedMedications.map((med) => ({
+          medication: med,
+          medicationBrief: generateMedicationBrief(med),
+          additionalNotes: '',
+          fullNote: '',
+        }));
+        setChronicNotes(initialNotes);
       }
     }
   }, [currentCase?.selectedMedications]);
-
-  useEffect(() => {
-    if (selectedMedication) {
-      const brief = generateMedicationBrief(selectedMedication);
-      setMedicationBrief(brief);
-    }
-  }, [selectedMedication]);
 
   const generateMedicationBrief = (med: Medicine): string => {
     const cdaAmount =
@@ -47,31 +47,57 @@ Plan Coverage: ${selectedPlan}
 This medication has been prescribed for the management of ${currentCase?.confirmedCondition}. The patient should take this medication as directed by their healthcare provider.`;
   };
 
+  const handleEditNotes = (index: number) => {
+    setEditingIndex(index);
+    setEditingNotes(chronicNotes[index].additionalNotes);
+  };
+
+  const handleSaveNotes = (index: number) => {
+    const updatedNotes = [...chronicNotes];
+    updatedNotes[index] = {
+      ...updatedNotes[index],
+      additionalNotes: editingNotes,
+      fullNote: `${updatedNotes[index].medicationBrief}\n\n--- Additional Clinical Notes ---\n${editingNotes}`,
+    };
+    setChronicNotes(updatedNotes);
+    setEditingIndex(null);
+    setEditingNotes('');
+  };
+
   const handleConfirm = () => {
-    if (!additionalNotes.trim()) {
-      alert('Please add additional notes before proceeding.');
+    const incompleteNotes = chronicNotes.filter((note) => !note.additionalNotes.trim());
+
+    if (incompleteNotes.length > 0) {
+      alert(
+        `Please add clinical notes for all ${chronicNotes.length} medications before proceeding.\n\n${incompleteNotes.length} medication(s) still need notes.`
+      );
       return;
     }
 
-    const fullNote = `${medicationBrief}\n\n--- Additional Clinical Notes ---\n${additionalNotes}`;
+    // Generate full notes for all medications
+    const finalNotes = chronicNotes.map((note) => ({
+      ...note,
+      fullNote: `${note.medicationBrief}\n\n--- Additional Clinical Notes ---\n${note.additionalNotes}`,
+    }));
 
     updateCurrentCase({
-      chronicRegistrationNote: fullNote,
+      chronicRegistrationNotes: finalNotes,
     });
     nextStep();
   };
 
   const medications = currentCase?.selectedMedications || [];
+  const allNotesComplete = chronicNotes.every((note) => note.additionalNotes.trim());
 
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Step 5: Chronic Registration Note
+            Step 5: Chronic Registration Notes
           </h2>
           <p className="text-gray-600">
-            Select a medication to generate a brief description, then add additional clinical notes.
+            Generate a chronic registration note for each selected medication. Add clinical notes for all {medications.length} medication(s).
           </p>
         </div>
 
@@ -79,10 +105,10 @@ This medication has been prescribed for the management of ${currentCase?.confirm
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-800">
-              <p className="font-semibold mb-1">Medication Brief Auto-Generated</p>
+              <p className="font-semibold mb-1">Multiple Medications Selected</p>
               <p>
-                When you select a medication, a brief description will be automatically created.
-                Add your additional clinical notes in the text area below.
+                You have selected {medications.length} medication(s). A separate chronic registration note will be generated for each medication.
+                Please add clinical notes for all medications.
               </p>
             </div>
           </div>
@@ -98,82 +124,137 @@ This medication has been prescribed for the management of ${currentCase?.confirm
           </div>
         ) : (
           <>
-            <div className="mb-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-3">
-                Select Medication for Brief
-              </h3>
-              <div className="grid grid-cols-1 gap-3">
-                {medications.map((med) => (
-                  <button
-                    key={med.medicineNameStrength}
-                    onClick={() => setSelectedMedication(med)}
-                    className={`text-left p-4 rounded-lg border-2 transition-all ${
-                      selectedMedication?.medicineNameStrength === med.medicineNameStrength
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-gray-300 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">
-                          {med.medicineNameStrength}
-                        </p>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {med.activeIngredient} • {med.medicineClass}
-                        </p>
+            <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Progress</p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {chronicNotes.filter((n) => n.additionalNotes.trim()).length} of {chronicNotes.length} completed
+                  </p>
+                </div>
+                {allNotesComplete && (
+                  <CheckCircle2 className="w-8 h-8 text-green-600" />
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-6 mb-8">
+              {chronicNotes.map((note, index) => (
+                <div
+                  key={note.medication.medicineNameStrength}
+                  className={`border-2 rounded-lg p-6 transition-all ${
+                    note.additionalNotes.trim()
+                      ? 'border-green-300 bg-green-50'
+                      : 'border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-xl font-bold text-gray-900">
+                          Medication {index + 1} of {chronicNotes.length}
+                        </h3>
+                        {note.additionalNotes.trim() && (
+                          <CheckCircle2 className="w-5 h-5 text-green-600" />
+                        )}
                       </div>
-                      {selectedMedication?.medicineNameStrength === med.medicineNameStrength && (
-                        <CheckCircle2 className="w-6 h-6 text-primary-600 ml-3" />
+                      <p className="text-lg font-semibold text-primary-600">
+                        {note.medication.medicineNameStrength}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {note.medication.activeIngredient} • {note.medication.medicineClass}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <h4 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      Medication Brief (Auto-Generated)
+                    </h4>
+                    <div className="bg-gray-50 border border-gray-300 rounded-lg p-3">
+                      <pre className="text-xs text-gray-900 whitespace-pre-wrap font-sans">
+                        {note.medicationBrief}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-sm font-bold text-gray-900">
+                        Additional Clinical Notes
+                      </h4>
+                      {editingIndex !== index && (
+                        <button
+                          onClick={() => handleEditNotes(index)}
+                          className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                          {note.additionalNotes.trim() ? 'Edit' : 'Add Notes'}
+                        </button>
                       )}
                     </div>
-                  </button>
-                ))}
-              </div>
+
+                    {editingIndex === index ? (
+                      <div>
+                        <textarea
+                          value={editingNotes}
+                          onChange={(e) => setEditingNotes(e.target.value)}
+                          placeholder="Add clinical notes for this medication... (e.g., dosage instructions, monitoring requirements, patient-specific considerations)"
+                          className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-sm"
+                          autoFocus
+                        />
+                        <div className="flex gap-2 mt-2">
+                          <button
+                            onClick={() => handleSaveNotes(index)}
+                            disabled={!editingNotes.trim()}
+                            className="flex items-center gap-1 bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                          >
+                            <Save className="w-3 h-3" />
+                            Save Notes
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingIndex(null);
+                              setEditingNotes('');
+                            }}
+                            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : note.additionalNotes.trim() ? (
+                      <div className="bg-white border border-gray-300 rounded-lg p-3">
+                        <p className="text-sm text-gray-900 whitespace-pre-wrap">
+                          {note.additionalNotes}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {note.additionalNotes.trim().length} characters
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-3">
+                        <p className="text-sm text-amber-800 font-medium">
+                          Clinical notes required for this medication
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="mb-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Medication Brief (Auto-Generated)
-              </h3>
-              <div className="bg-gray-50 border border-gray-300 rounded-lg p-4">
-                <pre className="text-sm text-gray-900 whitespace-pre-wrap font-sans">
-                  {medicationBrief}
-                </pre>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                This brief is automatically generated based on the selected medication and will be
-                included in the final claim documentation.
-              </p>
-            </div>
-
-            <div className="mb-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-3">
-                Additional Clinical Notes
-              </h3>
-              <textarea
-                value={additionalNotes}
-                onChange={(e) => setAdditionalNotes(e.target.value)}
-                placeholder="Add your clinical notes here... (e.g., dosage instructions, monitoring requirements, patient-specific considerations)"
-                className="w-full h-48 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-              />
-              <p className="text-xs text-gray-500 mt-2">
-                Enter additional clinical information, dosage instructions, monitoring requirements,
-                or any patient-specific considerations.
-              </p>
-            </div>
-
-            {additionalNotes.trim() && (
+            {allNotesComplete && (
               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-green-900">
-                      Additional notes added ({additionalNotes.trim().length} characters)
+                      All chronic registration notes completed
                     </p>
                     <p className="text-xs text-green-700 mt-1">
-                      Your clinical notes will be combined with the medication brief in the final
-                      claim.
+                      {chronicNotes.length} separate note(s) will be included in the final claim documentation.
                     </p>
                   </div>
                 </div>
@@ -191,7 +272,7 @@ This medication has been prescribed for the management of ${currentCase?.confirm
           </button>
           <button
             onClick={handleConfirm}
-            disabled={medications.length === 0 || !additionalNotes.trim()}
+            disabled={medications.length === 0 || !allNotesComplete}
             className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             Confirm and Continue
