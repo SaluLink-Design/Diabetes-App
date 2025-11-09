@@ -6,18 +6,32 @@ import { exportCaseToPDF } from '@/lib/pdfExport';
 import { FileText, Download, Save, CheckCircle2 } from 'lucide-react';
 
 export const Step6ClaimSummary = () => {
-  const { currentCase, updateCurrentCase, saveCase, previousStep, createNewCase } = useAppStore();
+  const { currentCase, selectedPatient, updateCurrentCase, saveCase, previousStep, createNewCase } = useAppStore();
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const handleSaveCase = () => {
-    saveCase();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const handleSaveCase = async () => {
+    if (!selectedPatient) {
+      alert('Patient information is required to save the case.');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await saveCase();
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error('Error saving case:', error);
+      alert('Failed to save case. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleExportPDF = () => {
-    if (!currentCase || !currentCase.id) return;
-    exportCaseToPDF(currentCase as any);
+    if (!currentCase) return;
+    exportCaseToPDF({ ...currentCase, patient: selectedPatient } as any);
   };
 
   const handleNewCase = () => {
@@ -249,10 +263,11 @@ export const Step6ClaimSummary = () => {
             </button>
             <button
               onClick={handleSaveCase}
-              className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              disabled={saving || !selectedPatient}
+              className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="w-5 h-5" />
-              Save Case
+              {saving ? 'Saving...' : 'Save Case'}
             </button>
           </div>
 

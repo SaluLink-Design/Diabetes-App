@@ -64,18 +64,60 @@ export interface ChronicRegistrationNote {
   fullNote: string;
 }
 
+export interface Patient {
+  id: string;
+  full_name: string;
+  patient_id_number: string;
+  date_of_birth: string;
+  medical_aid_number: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Case {
   id: string;
+  patient_id: string;
   patientNote: string;
   detectedConditions: string[];
   confirmedCondition: string;
   selectedIcdCodes: Condition[];
   selectedTreatments: TreatmentItem[];
   selectedMedications: Medicine[];
-  chronicRegistrationNote: string; // Deprecated - kept for backwards compatibility
+  chronicRegistrationNote: string;
   chronicRegistrationNotes: ChronicRegistrationNote[];
+  status: 'active' | 'completed' | 'archived';
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface CaseWithPatient extends Case {
+  patient: Patient;
+}
+
+export interface OngoingManagementActivity {
+  id: string;
+  case_id: string;
+  activity_type: 'specialist_visit' | 'diagnostic_test' | 'follow_up' | 'other';
+  activity_date: string;
+  specialist_type: string | null;
+  clinical_notes: string;
+  attachments: any[];
+  created_at: string;
+  created_by: string;
+}
+
+export interface ReferralLetter {
+  id: string;
+  case_id: string;
+  patient_id: string;
+  specialist_type: string;
+  reason_for_referral: string;
+  urgency_level: 'routine' | 'urgent' | 'emergency';
+  clinical_summary: string;
+  referral_document: any;
+  status: 'pending' | 'sent' | 'completed' | 'cancelled';
+  created_at: string;
+  sent_at: string | null;
 }
 
 export interface WorkflowStep {

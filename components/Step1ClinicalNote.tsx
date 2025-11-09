@@ -5,9 +5,11 @@ import Image from 'next/image';
 import { useAppStore } from '@/store/useAppStore';
 import { analyzeClinicalNote, isDiabetesRelated } from '@/lib/clinicalBERT';
 import { Loader2, AlertCircle, CheckCircle2, FileText } from 'lucide-react';
+import { PatientIdentification } from './PatientIdentification';
+import type { Patient } from '@/types';
 
 export const Step1ClinicalNote = () => {
-  const { currentCase, updateCurrentCase, nextStep } = useAppStore();
+  const { currentCase, updateCurrentCase, nextStep, selectedPatient, setSelectedPatient } = useAppStore();
   const [note, setNote] = useState(currentCase?.patientNote || '');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [detectedConditions, setDetectedConditions] = useState<string[]>([]);
@@ -68,10 +70,19 @@ Currently on Metformin 850mg BD`;
       return;
     }
 
+    if (!selectedPatient) {
+      setError('Please select a patient before proceeding.');
+      return;
+    }
+
     updateCurrentCase({
       confirmedCondition: selectedCondition,
     });
     nextStep();
+  };
+
+  const handlePatientSelected = (patient: Patient) => {
+    setSelectedPatient(patient);
   };
 
   return (
@@ -85,6 +96,11 @@ Currently on Metformin 850mg BD`;
             Enter or paste the patient's clinical notes. Select 'Analyse' to identify potential chronic conditions
           </p>
         </div>
+
+        <PatientIdentification
+          onPatientSelected={handlePatientSelected}
+          initialPatient={selectedPatient}
+        />
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
 

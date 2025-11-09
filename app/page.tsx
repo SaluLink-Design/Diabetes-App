@@ -9,8 +9,11 @@ import { Step2IcdMapping } from '@/components/Step2IcdMapping';
 import { Step3TreatmentProtocol } from '@/components/Step3TreatmentProtocol';
 import { Step4Medication } from '@/components/Step4Medication';
 import { Step5ChronicNote } from '@/components/Step5ChronicNote';
+import { Step6ClaimSummary } from '@/components/Step6ClaimSummary';
 import { SplashScreen } from '@/components/SplashScreen';
 import { LandingPage } from '@/components/LandingPage';
+import { ViewCases } from '@/components/ViewCases';
+import { CaseDetails } from '@/components/CaseDetails';
 import { loadConditionsData, loadMedicineData, loadTreatmentData } from '@/lib/dataLoader';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -27,6 +30,8 @@ export default function Home() {
 
   const [showSplash, setShowSplash] = useState(true);
   const [showLanding, setShowLanding] = useState(false);
+  const [showViewCases, setShowViewCases] = useState(false);
+  const [viewCaseId, setViewCaseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -98,6 +103,39 @@ export default function Home() {
     );
   }
 
+  if (viewCaseId) {
+    return (
+      <CaseDetails
+        caseId={viewCaseId}
+        onBack={() => {
+          setViewCaseId(null);
+          setShowViewCases(true);
+        }}
+        onEditCase={(caseId) => {
+          useAppStore.getState().loadCase(caseId);
+          setViewCaseId(null);
+          setShowViewCases(false);
+          setShowLanding(false);
+        }}
+      />
+    );
+  }
+
+  if (showViewCases) {
+    return (
+      <ViewCases
+        onCaseSelect={(caseId) => {
+          setViewCaseId(caseId);
+          setShowViewCases(false);
+        }}
+        onClose={() => {
+          setShowViewCases(false);
+          setShowLanding(true);
+        }}
+      />
+    );
+  }
+
   if (showLanding || !currentCase) {
     return (
       <LandingPage
@@ -106,7 +144,8 @@ export default function Home() {
           setShowLanding(false);
         }}
         onViewCases={() => {
-          alert('View Cases functionality coming soon!');
+          setShowViewCases(true);
+          setShowLanding(false);
         }}
       />
     );
@@ -124,6 +163,7 @@ export default function Home() {
             {currentStep === 3 && <Step3TreatmentProtocol />}
             {currentStep === 4 && <Step4Medication />}
             {currentStep === 5 && <Step5ChronicNote />}
+            {currentStep === 6 && <Step6ClaimSummary />}
           </div>
         </div>
 

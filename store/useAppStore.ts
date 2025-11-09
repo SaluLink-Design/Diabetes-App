@@ -1,39 +1,46 @@
 import { create } from 'zustand';
-import { Case, Condition, Treatment, Medicine, TreatmentItem, MedicalPlan, ChronicRegistrationNote } from '@/types';
+import { Case, Condition, Treatment, Medicine, TreatmentItem, MedicalPlan, ChronicRegistrationNote, Patient } from '@/types';
+import { caseService, patientService } from '@/lib/supabaseHelpers';
 
 interface AppState {
   // Data
   allConditions: Condition[];
   allTreatments: Treatment[];
   allMedicines: Medicine[];
-  
+
   // Current Case
   currentCase: Partial<Case> | null;
   savedCases: Case[];
-  
+
+  // Patient
+  selectedPatient: Patient | null;
+
   // Workflow State
   currentStep: number;
-  
+
   // Selected Medical Plan
   selectedPlan: MedicalPlan;
-  
+
   // Actions
   setAllConditions: (conditions: Condition[]) => void;
   setAllTreatments: (treatments: Treatment[]) => void;
   setAllMedicines: (medicines: Medicine[]) => void;
-  
+
+  // Patient Management
+  setSelectedPatient: (patient: Patient | null) => void;
+
   // Case Management
   createNewCase: () => void;
   updateCurrentCase: (updates: Partial<Case>) => void;
-  saveCase: () => void;
-  loadCase: (caseId: string) => void;
-  deleteCase: (caseId: string) => void;
-  
+  saveCase: () => Promise<void>;
+  loadCase: (caseId: string) => Promise<void>;
+  deleteCase: (caseId: string) => Promise<void>;
+
   // Workflow
   setCurrentStep: (step: number) => void;
   nextStep: () => void;
   previousStep: () => void;
-  
+
   // Plan Selection
   setSelectedPlan: (plan: MedicalPlan) => void;
 }
@@ -45,6 +52,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   allMedicines: [],
   currentCase: null,
   savedCases: [],
+  selectedPatient: null,
   currentStep: 1,
   selectedPlan: 'Core',
   
@@ -52,11 +60,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   setAllConditions: (conditions) => set({ allConditions: conditions }),
   setAllTreatments: (treatments) => set({ allTreatments: treatments }),
   setAllMedicines: (medicines) => set({ allMedicines: medicines }),
+
+  // Patient Management
+  setSelectedPatient: (patient) => set({ selectedPatient: patient }),
   
   // Case Management
   createNewCase: () => {
     const newCase: Partial<Case> = {
-      id: `case-${Date.now()}`,
       patientNote: '',
       detectedConditions: [],
       confirmedCondition: '',
@@ -65,10 +75,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       selectedMedications: [],
       chronicRegistrationNote: '',
       chronicRegistrationNotes: [],
+      status: 'active',
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    set({ currentCase: newCase, currentStep: 1 });
+    set({ currentCase: newCase, currentStep: 1, selectedPatient: null });
   },
   
   updateCurrentCase: (updates) => {
@@ -84,56 +95,90 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
   
-  saveCase: () => {
-    const { currentCase, savedCases } = get();
-    if (currentCase && currentCase.id) {
-      const existingIndex = savedCases.findIndex(c => c.id === currentCase.id);
-      
-      const completeCase: Case = {
-        id: currentCase.id,
-        patientNote: currentCase.patientNote || '',
-        detectedConditions: currentCase.detectedConditions || [],
-        confirmedCondition: currentCase.confirmedCondition || '',
-        selectedIcdCodes: currentCase.selectedIcdCodes || [],
-        selectedTreatments: currentCase.selectedTreatments || [],
-        selectedMedications: currentCase.selectedMedications || [],
-        chronicRegistrationNote: currentCase.chronicRegistrationNote || '',
-        chronicRegistrationNotes: currentCase.chronicRegistrationNotes || [],
-        createdAt: currentCase.createdAt || new Date(),
-        updatedAt: new Date(),
+  saveCase: async () => {
+    const { currentCase, selectedPatient } = get();
+    if (!currentCase || !selectedPatient) {
+      throw new Error('Cannot save case without patient');
+    }
+
+    try {
+      const caseData: any = {
+        patient_id: selectedPatient.id,
+        patient_note: currentCase.patientNote || '',
+        detected_conditions: currentCase.detectedConditions || [],
+        confirmed_condition: currentCase.confirmedCondition || '',
+        selected_icd_codes: currentCase.selectedIcdCodes || [],
+        selected_treatments: currentCase.selectedTreatments || [],
+        selected_medications: currentCase.selectedMedications || [],
+        chronic_registration_note: currentCase.chronicRegistrationNote || '',
+        chronic_registration_notes: currentCase.chronicRegistrationNotes || [],
+        status: currentCase.status || 'active',
       };
-      
-      if (existingIndex >= 0) {
-        const updatedCases = [...savedCases];
-        updatedCases[existingIndex] = completeCase;
-        set({ savedCases: updatedCases });
+
+      let savedCase;
+      if (currentCase.id) {
+        savedCase = await caseService.updateCase(currentCase.id, caseData);
       } else {
-        set({ savedCases: [...savedCases, completeCase] });
+        savedCase = await caseService.createCase(caseData);
       }
-      
-      // Save to localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('salulink-cases', JSON.stringify([...savedCases, completeCase]));
-      }
+
+      set({
+        currentCase: {
+          ...currentCase,
+          id: savedCase.id,
+          patient_id: savedCase.patient_id,
+        }
+      });
+    } catch (error) {
+      console.error('Error saving case:', error);
+      throw error;
     }
   },
   
-  loadCase: (caseId) => {
-    const { savedCases } = get();
-    const caseToLoad = savedCases.find(c => c.id === caseId);
-    if (caseToLoad) {
-      set({ currentCase: caseToLoad, currentStep: 1 });
+  loadCase: async (caseId) => {
+    try {
+      const caseData = await caseService.getCaseById(caseId);
+      if (!caseData) {
+        throw new Error('Case not found');
+      }
+
+      const patientData = await patientService.getAllPatients();
+      const patient = patientData.find(p => p.id === caseData.patient_id);
+
+      const dbCase: any = caseData;
+      const formattedCase: Partial<Case> = {
+        id: dbCase.id,
+        patient_id: dbCase.patient_id,
+        patientNote: dbCase.patient_note || '',
+        detectedConditions: Array.isArray(dbCase.detected_conditions) ? dbCase.detected_conditions : [],
+        confirmedCondition: dbCase.confirmed_condition || '',
+        selectedIcdCodes: Array.isArray(dbCase.selected_icd_codes) ? dbCase.selected_icd_codes : [],
+        selectedTreatments: Array.isArray(dbCase.selected_treatments) ? dbCase.selected_treatments : [],
+        selectedMedications: Array.isArray(dbCase.selected_medications) ? dbCase.selected_medications : [],
+        chronicRegistrationNote: dbCase.chronic_registration_note || '',
+        chronicRegistrationNotes: Array.isArray(dbCase.chronic_registration_notes) ? dbCase.chronic_registration_notes : [],
+        status: dbCase.status,
+        createdAt: new Date(dbCase.created_at),
+        updatedAt: new Date(dbCase.updated_at),
+      };
+
+      set({
+        currentCase: formattedCase,
+        selectedPatient: patient || null,
+        currentStep: 1
+      });
+    } catch (error) {
+      console.error('Error loading case:', error);
+      throw error;
     }
   },
   
-  deleteCase: (caseId) => {
-    const { savedCases } = get();
-    const updatedCases = savedCases.filter(c => c.id !== caseId);
-    set({ savedCases: updatedCases });
-    
-    // Update localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('salulink-cases', JSON.stringify(updatedCases));
+  deleteCase: async (caseId) => {
+    try {
+      await caseService.deleteCase(caseId);
+    } catch (error) {
+      console.error('Error deleting case:', error);
+      throw error;
     }
   },
   
@@ -157,17 +202,4 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Plan Selection
   setSelectedPlan: (plan) => set({ selectedPlan: plan }),
 }));
-
-// Load saved cases from localStorage on initialization
-if (typeof window !== 'undefined') {
-  const savedCasesJson = localStorage.getItem('salulink-cases');
-  if (savedCasesJson) {
-    try {
-      const savedCases = JSON.parse(savedCasesJson);
-      useAppStore.setState({ savedCases });
-    } catch (error) {
-      console.error('Error loading saved cases:', error);
-    }
-  }
-}
 

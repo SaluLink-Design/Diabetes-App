@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
-import { Case, Condition, Medicine, TreatmentItem, ChronicRegistrationNote } from '@/types';
+import { Case, Condition, Medicine, TreatmentItem, ChronicRegistrationNote, Patient } from '@/types';
 
-export const exportCaseToPDF = (caseData: Case) => {
+export const exportCaseToPDF = (caseData: Case & { patient?: Patient }) => {
   const doc = new jsPDF();
   let yPosition = 20;
   const lineHeight = 7;
@@ -41,6 +41,19 @@ export const exportCaseToPDF = (caseData: Case) => {
   
   yPosition = 50;
   doc.setTextColor(0, 0, 0);
+
+  // Patient Information
+  if (caseData.patient) {
+    addText('PATIENT INFORMATION', 14, true);
+    yPosition += 2;
+    addText(`Name: ${caseData.patient.full_name}`, 10);
+    addText(`ID Number: ${caseData.patient.patient_id_number}`, 10);
+    addText(`Date of Birth: ${new Date(caseData.patient.date_of_birth).toLocaleDateString()}`, 10);
+    if (caseData.patient.medical_aid_number) {
+      addText(`Medical Aid Number: ${caseData.patient.medical_aid_number}`, 10);
+    }
+    yPosition += 5;
+  }
 
   // Case Information
   addText(`Case ID: ${caseData.id}`, 10, true);
