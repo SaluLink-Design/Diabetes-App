@@ -1,6 +1,5 @@
 'use client';
 
-import { Plus, Eye } from 'lucide-react';
 import Image from 'next/image';
 
 interface LandingPageProps {
@@ -10,64 +9,48 @@ interface LandingPageProps {
 
 export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-2xl">
-        <div className="text-center mb-16">
-          <div className="mb-12 flex justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-4xl">
+        <div className="text-center mb-12">
+          <p className="text-lg text-gray-800 mb-8">Authi 1.0 AI Medical Assistant</p>
+
+          <h1 className="text-6xl font-bold mb-12" style={{ lineHeight: '1.2' }}>
+            <span style={{ color: '#a78bfa' }}>Hi Doctor. How Can I Assist You</span>
+            <br />
+            <span style={{ color: '#60a5fa' }}>Today?</span>
+          </h1>
+
+          <div className="w-80 h-80 mx-auto mb-12 flex items-center justify-center">
             <Image
-              src="/6 copy copy.svg"
+              src="/5.svg"
               alt="SaluLink Logo"
-              width={400}
-              height={160}
+              width={320}
+              height={320}
               priority
-              className="w-auto h-32"
+              className="w-full h-full object-contain"
             />
-          </div>
-
-          <div className="mb-12">
-            <div className="w-24 h-24 mx-auto mb-8 flex items-center justify-center">
-              <Image
-                src="/Authi.png"
-                alt="Authi Logo"
-                width={96}
-                height={96}
-                priority
-                className="w-24 h-24 object-contain"
-              />
-            </div>
-            <h1 className="text-6xl font-bold text-gray-900 mb-4">
-              Authi 1.0
-            </h1>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-12 max-w-xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-3">
-              AI Medical Assistant
-            </h2>
-            <p className="text-lg text-gray-600">
-              Clinical documentation and treatment management for chronic disease patients
-            </p>
           </div>
         </div>
 
-        <div className="space-y-5 max-w-lg mx-auto">
+        <div className="flex gap-6 justify-center max-w-2xl mx-auto">
           <button
             onClick={onNewCase}
-            className="w-full bg-black hover:bg-gray-900 text-white py-6 px-8 rounded-2xl font-bold text-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+            className="bg-white hover:bg-gray-50 text-black py-4 px-12 rounded-full font-medium text-lg transition-all duration-200 shadow-md hover:shadow-lg"
           >
-            <Plus className="w-7 h-7" strokeWidth={3} />
-            New Case
+            + New Case
           </button>
 
           <button
             onClick={onViewCases}
-            className="w-full bg-white hover:bg-gray-50 text-black py-6 px-8 rounded-2xl font-bold text-xl transition-all duration-200 flex items-center justify-center gap-3 border-3 border-black shadow-md hover:shadow-lg"
-            style={{ borderWidth: '3px' }}
+            className="bg-white hover:bg-gray-50 text-black py-4 px-12 rounded-full font-medium text-lg transition-all duration-200 shadow-md hover:shadow-lg"
           >
-            <Eye className="w-7 h-7" strokeWidth={2.5} />
             View Cases
           </button>
         </div>
+      </div>
+
+      <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+        <p className="text-sm text-gray-700">Powered by SaluLink AI</p>
       </div>
     </div>
   );

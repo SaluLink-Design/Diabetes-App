@@ -9,7 +9,6 @@ import { Step2IcdMapping } from '@/components/Step2IcdMapping';
 import { Step3TreatmentProtocol } from '@/components/Step3TreatmentProtocol';
 import { Step4Medication } from '@/components/Step4Medication';
 import { Step5ChronicNote } from '@/components/Step5ChronicNote';
-import { Step6ClaimSummary } from '@/components/Step6ClaimSummary';
 import { SplashScreen } from '@/components/SplashScreen';
 import { LandingPage } from '@/components/LandingPage';
 import { loadConditionsData, loadMedicineData, loadTreatmentData } from '@/lib/dataLoader';
@@ -114,32 +113,24 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-white">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <WorkflowProgress />
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
           <div className="py-8">
             {currentStep === 1 && <Step1ClinicalNote />}
             {currentStep === 2 && <Step2IcdMapping />}
             {currentStep === 3 && <Step3TreatmentProtocol />}
             {currentStep === 4 && <Step4Medication />}
             {currentStep === 5 && <Step5ChronicNote />}
-            {currentStep === 6 && <Step6ClaimSummary />}
           </div>
         </div>
 
-        {/* Authi 1.0 Badge */}
-        <div className="border-t border-gray-200 bg-white px-6 py-3">
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
-            <Image
-              src="/Authi.png"
-              alt="Authi Logo"
-              width={24}
-              height={24}
-              className="w-6 h-6 object-contain"
-            />
-            <span>Powered by <span className="font-semibold text-primary-600">Authi 1.0</span></span>
+        {/* Powered by Badge */}
+        <div className="bg-white px-6 py-3">
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-700">
+            <span>Powered by SaluLink AI</span>
           </div>
         </div>
       </div>

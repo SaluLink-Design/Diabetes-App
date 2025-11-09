@@ -31,8 +31,8 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
-      <div className="relative w-64 h-64">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100">
+      <div className="relative w-80 h-80 mb-8">
         <div
           className={`absolute inset-0 transition-opacity duration-800 ${
             phase === 'black' ? 'opacity-100' : 'opacity-0'
@@ -41,8 +41,8 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           <Image
             src="/5.svg"
             alt="SaluLink Logo"
-            width={256}
-            height={256}
+            width={320}
+            height={320}
             priority
             className="w-full h-full object-contain"
           />
@@ -56,38 +56,32 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
           <Image
             src="/6.svg"
             alt="SaluLink Logo"
-            width={256}
-            height={256}
+            width={320}
+            height={320}
             priority
             className="w-full h-full object-contain"
           />
         </div>
       </div>
 
-      <div className="absolute bottom-16 left-0 right-0 flex justify-center">
-        <div className="flex gap-2">
-          <div
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              phase === 'black'
-                ? 'opacity-100 bg-gray-900'
-                : 'opacity-30 bg-[#38b6ff]'
-            }`}
-          />
-          <div
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              phase === 'transition'
-                ? 'opacity-100 bg-gray-500'
-                : 'opacity-30 bg-[#38b6ff]'
-            }`}
-          />
-          <div
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              phase === 'blue'
-                ? 'opacity-100 bg-[#38b6ff]'
-                : 'opacity-30 bg-gray-300'
-            }`}
-          />
-        </div>
+      <h1 className="text-5xl font-bold mb-12" style={{ color: phase === 'black' ? '#000000' : '#000000' }}>
+        {phase === 'black' && 'SaluLink'}
+        {phase === 'transition' && (
+          <span>
+            <span style={{ color: '#38b6ff' }}>Salu</span>
+            <span style={{ color: '#000000' }}>Link</span>
+          </span>
+        )}
+        {phase === 'blue' && (
+          <span>
+            <span style={{ color: '#38b6ff' }}>Salu</span>
+            <span style={{ color: '#000000' }}>Link</span>
+          </span>
+        )}
+      </h1>
+
+      <div className="absolute bottom-16 left-0 right-0 flex flex-col items-center">
+        <p className="text-sm text-gray-700 mb-4">Powered by SaluLink AI</p>
       </div>
     </div>
   );

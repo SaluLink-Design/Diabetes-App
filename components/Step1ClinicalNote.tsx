@@ -61,43 +61,28 @@ export const Step1ClinicalNote = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Step 1: Clinical Note Input and Analysis
-          </h2>
-          <p className="text-gray-600">
-            Enter or paste the patient's clinical note below. The system will analyze it to identify potential chronic conditions.
-          </p>
-        </div>
+    <div className="w-full max-w-6xl mx-auto p-6">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-3">
+          Clinical Note Input Analysis
+        </h2>
+        <p className="text-gray-600">
+          Enter or paste the patient's clinical notes. Select 'Analyse' to identify potential chronic conditions
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
 
         {/* Clinical Note Input */}
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Patient Clinical Note
-            </label>
-            <button
-              onClick={() => {
-                const exampleNote = `Patient presents with polyuria and polydipsia.
-Blood glucose: 8.5 mmol/L
-HbA1c: 7.8%
-History of Type 2 Diabetes Mellitus
-Currently on Metformin 850mg BD`;
-                setNote(exampleNote);
-              }}
-              disabled={isAnalyzing || detectedConditions.length > 0}
-              className="text-sm text-primary-600 hover:text-primary-700 font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
-            >
-              Load Example Note
-            </button>
-          </div>
+          <label className="block text-lg font-semibold text-gray-900 mb-3">
+            Patient Notes:
+          </label>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Enter patient clinical note here..."
-            className="w-full h-48 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            className="w-full h-64 px-6 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 resize-none text-base bg-gray-50"
             disabled={isAnalyzing || detectedConditions.length > 0}
           />
         </div>
@@ -115,15 +100,15 @@ Currently on Metformin 850mg BD`;
           <button
             onClick={handleAnalyze}
             disabled={isAnalyzing || !note.trim()}
-            className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="bg-white border-2 border-gray-300 text-gray-700 py-3 px-10 rounded-full font-medium hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
           >
             {isAnalyzing ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Analyzing with ClinicalBERT...
+                Analyzing...
               </>
             ) : (
-              'Analyze Note'
+              'Analyze'
             )}
           </button>
         )}
@@ -175,14 +160,14 @@ Currently on Metformin 850mg BD`;
                   setSelectedCondition('');
                   setError('');
                 }}
-                className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-full font-medium hover:bg-gray-300 transition-colors"
               >
                 Re-analyze
               </button>
               <button
                 onClick={handleConfirmCondition}
                 disabled={!selectedCondition}
-                className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 bg-gradient-to-r from-purple-400 to-blue-400 text-white py-3 px-6 rounded-full font-medium hover:from-purple-500 hover:to-blue-500 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Confirm Condition
               </button>

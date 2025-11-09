@@ -92,9 +92,9 @@ This medication has been prescribed for the management of ${currentCase?.confirm
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-lg p-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Step 5: Chronic Registration Notes
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Final Documentation
           </h2>
           <p className="text-gray-600">
             Generate a chronic registration note for each selected medication. Add clinical notes for all {medications.length} medication(s).
@@ -266,16 +266,16 @@ This medication has been prescribed for the management of ${currentCase?.confirm
         <div className="flex gap-4">
           <button
             onClick={previousStep}
-            className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+            className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-full font-medium hover:bg-gray-300 transition-colors"
           >
             Previous
           </button>
           <button
             onClick={handleConfirm}
             disabled={medications.length === 0 || !allNotesComplete}
-            className="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-gradient-to-r from-purple-400 to-blue-400 text-white py-3 px-6 rounded-full font-medium hover:from-purple-500 hover:to-blue-500 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
-            Confirm and Continue
+            Generate Final Documentation
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
