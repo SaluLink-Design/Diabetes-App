@@ -21,6 +21,7 @@ export interface TreatmentItem {
   selected?: boolean;
   selectedQuantity?: number;
   basketType?: 'diagnostic' | 'ongoing';
+  usageCount?: number;
   documentation?: {
     note?: string;
     imageUrl?: string;
