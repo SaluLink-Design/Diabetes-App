@@ -6,6 +6,7 @@ import { Treatment, TreatmentItem, DocumentFile } from '@/types';
 import { FileText, CheckCircle2, AlertTriangle, ArrowRight, SkipForward } from 'lucide-react';
 import { ProcedureQuantityControl } from './ProcedureQuantityControl';
 import { DocumentationUpload } from './DocumentationUpload';
+import { ongoingManagementService, caseService } from '@/lib/supabaseHelpers';
 
 type BasketView = 'diagnostic' | 'ongoing';
 
@@ -494,11 +495,54 @@ export const Step3TreatmentProtocol = () => {
               </button>
               <button
                 onClick={isOngoingActivityMode ? async () => {
-                  const allSelected = [...selectedOngoing];
-                  updateCurrentCase({ selectedTreatments: allSelected });
-                  await useAppStore.getState().saveCase();
-                  setOngoingActivityMode(false);
-                  window.location.reload();
+                  try {
+                    if (selectedOngoing.length === 0) {
+                      alert('Please select at least one test');
+                      return;
+                    }
+
+                    const testsPerformed = selectedOngoing.map(test => ({
+                      code: test.code,
+                      description: test.description,
+                      basketType: test.basketType,
+                      documentation: test.documentation,
+                      usageCount: (test.usageCount || 0) + 1,
+                      selectedQuantity: test.selectedQuantity,
+                      coverageLimit: test.coverageLimit,
+                    }));
+
+                    await ongoingManagementService.createActivity({
+                      case_id: currentCase?.id || '',
+                      activity_type: 'follow_up',
+                      activity_date: new Date().toISOString().split('T')[0],
+                      specialist_type: null,
+                      clinical_notes: 'Follow-up consultation with selected tests',
+                      attachments: testsPerformed,
+                      created_by: 'Doctor',
+                    });
+
+                    const caseData = await caseService.getCaseById(currentCase?.id || '');
+                    const updatedTreatments = ((caseData as any).selected_treatments || []).map((t: any) => {
+                      const performedTest = testsPerformed.find(pt => pt.code === t.code);
+                      if (performedTest && t.basketType === 'ongoing') {
+                        return {
+                          ...t,
+                          usageCount: performedTest.usageCount,
+                        };
+                      }
+                      return t;
+                    });
+
+                    await caseService.updateCase(currentCase?.id || '', {
+                      selected_treatments: updatedTreatments,
+                    } as any);
+
+                    setOngoingActivityMode(false);
+                    window.location.reload();
+                  } catch (error) {
+                    console.error('Error saving activity:', error);
+                    alert('Failed to save activity. Please try again.');
+                  }
                 } : handleConfirm}
                 disabled={selectedOngoing.length === 0}
                 className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
