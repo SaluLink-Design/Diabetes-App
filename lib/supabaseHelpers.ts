@@ -6,7 +6,7 @@ export const patientService = {
     const { data, error } = await supabase
       .from('patients')
       .select('*')
-      .or(`full_name.ilike.%${searchTerm}%,patient_id_number.ilike.%${searchTerm}%`)
+      .ilike('full_name', `%${searchTerm}%`)
       .order('full_name');
 
     if (error) throw error;

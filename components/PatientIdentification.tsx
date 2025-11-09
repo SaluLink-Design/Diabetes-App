@@ -61,13 +61,14 @@ export const PatientIdentification = ({ onPatientSelected, initialPatient }: Pat
 
   const handleCreateNewPatient = async () => {
     try {
-      const existingPatient = await patientService.getPatientByIdNumber(newPatient.patient_id_number);
-      if (existingPatient) {
-        alert('A patient with this ID number already exists.');
-        return;
-      }
+      const patientData = {
+        full_name: newPatient.full_name,
+        patient_id_number: `PATIENT-${Date.now()}`,
+        date_of_birth: new Date().toISOString().split('T')[0],
+        medical_aid_number: '',
+      };
 
-      const createdPatient = await patientService.createPatient(newPatient);
+      const createdPatient = await patientService.createPatient(patientData);
       setSelectedPatient(createdPatient);
       onPatientSelected(createdPatient);
       setShowNewPatientForm(false);
@@ -84,46 +85,23 @@ export const PatientIdentification = ({ onPatientSelected, initialPatient }: Pat
   };
 
   const isNewPatientFormValid = () => {
-    return (
-      newPatient.full_name.trim() !== '' &&
-      newPatient.patient_id_number.trim() !== '' &&
-      newPatient.date_of_birth !== ''
-    );
+    return newPatient.full_name.trim() !== '';
   };
 
   if (selectedPatient && !showNewPatientForm) {
     return (
       <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-900">Patient Information</h3>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-600">Patient Name</p>
+            <p className="text-lg font-bold text-gray-900">{selectedPatient.full_name}</p>
+          </div>
           <button
             onClick={() => setSelectedPatient(null)}
             className="text-sm text-primary-600 hover:text-primary-700 font-medium"
           >
             Change Patient
           </button>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-sm text-gray-600">Full Name</p>
-            <p className="font-medium text-gray-900">{selectedPatient.full_name}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Patient ID Number</p>
-            <p className="font-medium text-gray-900">{selectedPatient.patient_id_number}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Date of Birth</p>
-            <p className="font-medium text-gray-900">
-              {new Date(selectedPatient.date_of_birth).toLocaleDateString()}
-            </p>
-          </div>
-          {selectedPatient.medical_aid_number && (
-            <div>
-              <p className="text-sm text-gray-600">Medical Aid Number</p>
-              <p className="font-medium text-gray-900">{selectedPatient.medical_aid_number}</p>
-            </div>
-          )}
         </div>
       </div>
     );
@@ -141,7 +119,7 @@ export const PatientIdentification = ({ onPatientSelected, initialPatient }: Pat
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name or ID number..."
+              placeholder="Search by name..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
@@ -159,10 +137,6 @@ export const PatientIdentification = ({ onPatientSelected, initialPatient }: Pat
                   className="w-full text-left p-4 hover:bg-gray-50 transition-colors"
                 >
                   <p className="font-medium text-gray-900">{patient.full_name}</p>
-                  <p className="text-sm text-gray-600">ID: {patient.patient_id_number}</p>
-                  <p className="text-sm text-gray-600">
-                    DOB: {new Date(patient.date_of_birth).toLocaleDateString()}
-                  </p>
                 </button>
               ))}
             </div>
@@ -183,7 +157,7 @@ export const PatientIdentification = ({ onPatientSelected, initialPatient }: Pat
             <label className="block text-sm font-medium text-gray-700 mb-1">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4" />
-                Full Name *
+                Patient Name *
               </div>
             </label>
             <input
@@ -191,54 +165,7 @@ export const PatientIdentification = ({ onPatientSelected, initialPatient }: Pat
               value={newPatient.full_name}
               onChange={(e) => setNewPatient({ ...newPatient, full_name: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Enter patient's full name"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <div className="flex items-center gap-2">
-                <Hash className="w-4 h-4" />
-                Patient ID Number *
-              </div>
-            </label>
-            <input
-              type="text"
-              value={newPatient.patient_id_number}
-              onChange={(e) => setNewPatient({ ...newPatient, patient_id_number: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Enter ID or passport number"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Date of Birth *
-              </div>
-            </label>
-            <input
-              type="date"
-              value={newPatient.date_of_birth}
-              onChange={(e) => setNewPatient({ ...newPatient, date_of_birth: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <div className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                Medical Aid Number
-              </div>
-            </label>
-            <input
-              type="text"
-              value={newPatient.medical_aid_number}
-              onChange={(e) => setNewPatient({ ...newPatient, medical_aid_number: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Optional"
+              placeholder="Enter patient's name"
             />
           </div>
 
