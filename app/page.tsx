@@ -26,6 +26,7 @@ export default function Home() {
     setAllTreatments,
     setAllMedicines,
     createNewCase,
+    returnToCaseId,
   } = useAppStore();
 
   const [showSplash, setShowSplash] = useState(true);
@@ -59,6 +60,15 @@ export default function Home() {
 
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (returnToCaseId) {
+      setViewCaseId(returnToCaseId);
+      setShowViewCases(false);
+      setShowLanding(false);
+      useAppStore.setState({ returnToCaseId: null, isOngoingActivityMode: false, currentStep: 1 });
+    }
+  }, [returnToCaseId]);
 
   if (showSplash) {
     return (

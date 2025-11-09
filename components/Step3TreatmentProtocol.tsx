@@ -466,8 +466,11 @@ export const Step3TreatmentProtocol = () => {
           {isOngoingActivityMode && (
           <button
             onClick={() => {
-              setOngoingActivityMode(false);
-              window.location.reload();
+              useAppStore.setState({
+                returnToCaseId: currentCase?.id || null,
+                isOngoingActivityMode: false,
+                currentStep: 1
+              });
             }}
             className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
           >
@@ -537,8 +540,11 @@ export const Step3TreatmentProtocol = () => {
                       selected_treatments: updatedTreatments,
                     } as any);
 
-                    setOngoingActivityMode(false);
-                    window.location.reload();
+                    useAppStore.setState({
+                      returnToCaseId: currentCase?.id || null,
+                      isOngoingActivityMode: false,
+                      currentStep: 1
+                    });
                   } catch (error) {
                     console.error('Error saving activity:', error);
                     alert('Failed to save activity. Please try again.');
