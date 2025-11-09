@@ -43,23 +43,38 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         />
       </div>
 
-      <h1 className="text-6xl font-bold mb-12 transition-all duration-700 ease-in-out">
+      <div className="relative mb-12 transition-opacity duration-700 ease-in-out">
         {phase === 'allBlack' && (
-          <span style={{ color: '#1a1a1a' }}>SaluLink</span>
+          <Image
+            src="/1.svg"
+            alt="SaluLink Logo - All Black"
+            width={226}
+            height={110}
+            priority
+            className="transition-opacity duration-700 ease-in-out"
+          />
         )}
         {phase === 'babyBlueSalu' && (
-          <span>
-            <span className="transition-colors duration-700 ease-in-out" style={{ color: '#7dd3fc' }}>Salu</span>
-            <span className="transition-colors duration-700 ease-in-out" style={{ color: '#1a1a1a' }}>Link</span>
-          </span>
+          <Image
+            src="/3.svg"
+            alt="SaluLink Logo - Baby Blue Salu"
+            width={226}
+            height={110}
+            priority
+            className="transition-opacity duration-700 ease-in-out"
+          />
         )}
         {phase === 'babyBlueLink' && (
-          <span>
-            <span className="transition-colors duration-700 ease-in-out" style={{ color: '#1a1a1a' }}>Salu</span>
-            <span className="transition-colors duration-700 ease-in-out" style={{ color: '#7dd3fc' }}>Link</span>
-          </span>
+          <Image
+            src="/2.svg"
+            alt="SaluLink Logo - Baby Blue Link"
+            width={226}
+            height={110}
+            priority
+            className="transition-opacity duration-700 ease-in-out"
+          />
         )}
-      </h1>
+      </div>
 
       <div className="absolute bottom-16 left-0 right-0 flex flex-col items-center">
         <p className="text-sm text-gray-700">Powered by SaluLink AI</p>
