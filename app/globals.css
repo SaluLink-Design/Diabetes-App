@@ -3,19 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
+  --foreground-rgb: 31, 41, 55;
   --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
+  --background-end-rgb: 243, 244, 246;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 25%, #e0e7ff 50%, #dbeafe 75%, #f0f9ff 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
 @layer utilities {
@@ -31,16 +28,24 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #9f62ed;
+  background: rgba(168, 85, 247, 0.4);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8b5cf6;
+  background: rgba(168, 85, 247, 0.6);
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 

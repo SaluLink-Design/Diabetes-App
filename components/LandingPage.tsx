@@ -10,41 +10,28 @@ interface LandingPageProps {
 
 export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-16">
-          <div className="mb-12 flex justify-center">
+          <div className="mb-16 flex justify-center">
             <Image
-              src="/6 copy copy.svg"
+              src="/E891C2DC-E59F-410D-8380-3375D30C7586.jpeg"
               alt="SaluLink Logo"
               width={400}
               height={160}
               priority
-              className="w-auto h-32"
+              className="w-auto h-40 drop-shadow-xl"
             />
           </div>
 
-          <div className="mb-12">
-            <div className="w-24 h-24 mx-auto mb-8 flex items-center justify-center">
-              <Image
-                src="/Authi.png"
-                alt="Authi Logo"
-                width={96}
-                height={96}
-                priority
-                className="w-24 h-24 object-contain"
-              />
-            </div>
-            <h1 className="text-6xl font-bold text-gray-900 mb-4">
-              Authi 1.0
+          <div className="glass rounded-3xl shadow-2xl p-12 mb-12 max-w-xl mx-auto">
+            <h1 className="text-5xl font-bold text-gray-900 mb-6">
+              SaluLink
             </h1>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-12 max-w-xl mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+            <p className="text-xl text-gray-700 mb-4">
               AI Medical Assistant
-            </h2>
-            <p className="text-lg text-gray-600">
+            </p>
+            <p className="text-base text-gray-600">
               Clinical documentation and treatment management for chronic disease patients
             </p>
           </div>
@@ -53,20 +40,23 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
         <div className="space-y-5 max-w-lg mx-auto">
           <button
             onClick={onNewCase}
-            className="w-full bg-black hover:bg-gray-900 text-white py-6 px-8 rounded-2xl font-bold text-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+            className="w-full bg-gray-900 hover:bg-black text-white py-6 px-8 rounded-2xl font-semibold text-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:scale-[1.02]"
           >
-            <Plus className="w-7 h-7" strokeWidth={3} />
+            <Plus className="w-6 h-6" strokeWidth={2.5} />
             New Case
           </button>
 
           <button
             onClick={onViewCases}
-            className="w-full bg-white hover:bg-gray-50 text-black py-6 px-8 rounded-2xl font-bold text-xl transition-all duration-200 flex items-center justify-center gap-3 border-3 border-black shadow-md hover:shadow-lg"
-            style={{ borderWidth: '3px' }}
+            className="w-full glass hover:bg-white text-gray-900 py-6 px-8 rounded-2xl font-semibold text-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:scale-[1.02]"
           >
-            <Eye className="w-7 h-7" strokeWidth={2.5} />
+            <Eye className="w-6 h-6" strokeWidth={2.5} />
             View Cases
           </button>
+        </div>
+
+        <div className="text-center mt-12">
+          <p className="text-sm text-gray-600">Powered by SaluLink AI</p>
         </div>
       </div>
     </div>
