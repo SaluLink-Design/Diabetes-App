@@ -1,34 +1,20 @@
 'use client';
 
-import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import Image from 'next/image';
 import {
-  FileText,
-  Trash2,
   Sun,
   User,
   Settings,
   LogOut,
-  ChevronRight,
   FolderOpen
 } from 'lucide-react';
 
-export const Sidebar = () => {
-  const { savedCases, loadCase, deleteCase, createNewCase } = useAppStore();
-  const [showCases, setShowCases] = useState(false);
+interface SidebarProps {
+  onViewCases?: () => void;
+}
 
-  const handleLoadCase = (caseId: string) => {
-    loadCase(caseId);
-    setShowCases(false);
-  };
-
-  const handleDeleteCase = (caseId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (confirm('Are you sure you want to delete this case?')) {
-      deleteCase(caseId);
-    }
-  };
+export const Sidebar = ({ onViewCases }: SidebarProps) => {
+  const { createNewCase } = useAppStore();
 
   return (
     <div className="w-64 bg-gray-50 h-screen flex flex-col">
@@ -53,43 +39,12 @@ export const Sidebar = () => {
 
           {/* View Cases Button */}
           <button
-            onClick={() => setShowCases(!showCases)}
+            onClick={onViewCases}
             className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-200 rounded-lg transition-colors text-sm"
           >
-            View Cases
+            <FolderOpen className="w-5 h-5" />
+            View All Cases
           </button>
-
-          {/* Cases List */}
-          {showCases && (
-            <div className="ml-4 space-y-1 max-h-64 overflow-y-auto">
-              {savedCases.length === 0 ? (
-                <p className="text-sm text-gray-500 px-4 py-2">No saved cases</p>
-              ) : (
-                savedCases.map((caseItem) => (
-                  <div
-                    key={caseItem.id}
-                    className="group flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors"
-                    onClick={() => handleLoadCase(caseItem.id)}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {caseItem.confirmedCondition || 'Untitled Case'}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(caseItem.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <button
-                      onClick={(e) => handleDeleteCase(caseItem.id, e)}
-                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded transition-opacity"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
         </div>
       </div>
 

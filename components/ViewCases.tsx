@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, FileText, Calendar, User, ChevronRight, Filter, X, RefreshCw } from 'lucide-react';
+import { Search, FileText, Calendar, User, ChevronRight, Filter, X, RefreshCw, Trash2 } from 'lucide-react';
 import { patientService, caseService } from '@/lib/supabaseHelpers';
 import type { Patient, CaseWithPatient } from '@/types';
 
@@ -59,6 +59,26 @@ export const ViewCases = ({ onCaseSelect, onClose }: ViewCasesProps) => {
       alert(`Failed to load cases: ${error?.message || 'Please try again.'}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteCase = async (caseId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    const caseToDelete = cases.find(c => c.id === caseId);
+    if (!caseToDelete) return;
+
+    const confirmMessage = `Are you sure you want to delete this case?\n\nPatient: ${caseToDelete.patient.full_name}\nCondition: ${caseToDelete.confirmedCondition}\n\nThis action cannot be undone.`;
+
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      await caseService.deleteCase(caseId);
+      await loadCasesAndPatients();
+      alert('Case deleted successfully');
+    } catch (error: any) {
+      console.error('Error deleting case:', error);
+      alert(`Failed to delete case: ${error?.message || 'Please try again.'}`);
     }
   };
 
@@ -199,34 +219,45 @@ export const ViewCases = ({ onCaseSelect, onClose }: ViewCasesProps) => {
 
                     <div className="divide-y divide-gray-200">
                       {patientCases.map((c) => (
-                        <button
+                        <div
                           key={c.id}
-                          onClick={() => onCaseSelect(c.id)}
-                          className="w-full p-4 hover:bg-gray-50 transition-colors text-left flex items-center justify-between"
+                          className="w-full p-4 hover:bg-gray-50 transition-colors flex items-center justify-between group"
                         >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span
-                                className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                  c.status === 'active'
-                                    ? 'bg-green-100 text-green-700'
-                                    : c.status === 'completed'
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'bg-gray-100 text-gray-700'
-                                }`}
-                              >
-                                {c.status.toUpperCase()}
-                              </span>
-                              <span className="text-sm text-gray-600 flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
-                                {new Date(c.createdAt).toLocaleDateString()}
-                              </span>
+                          <button
+                            onClick={() => onCaseSelect(c.id)}
+                            className="flex-1 text-left flex items-center justify-between"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <span
+                                  className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                    c.status === 'active'
+                                      ? 'bg-green-100 text-green-700'
+                                      : c.status === 'completed'
+                                      ? 'bg-blue-100 text-blue-700'
+                                      : 'bg-gray-100 text-gray-700'
+                                  }`}
+                                >
+                                  {c.status.toUpperCase()}
+                                </span>
+                                <span className="text-sm text-gray-600 flex items-center gap-1">
+                                  <Calendar className="w-4 h-4" />
+                                  {new Date(c.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p className="font-medium text-gray-900 mb-1">{c.confirmedCondition}</p>
+                              <p className="text-sm text-gray-600 line-clamp-2">{c.patientNote}</p>
                             </div>
-                            <p className="font-medium text-gray-900 mb-1">{c.confirmedCondition}</p>
-                            <p className="text-sm text-gray-600 line-clamp-2">{c.patientNote}</p>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-gray-400 ml-4" />
-                        </button>
+                            <ChevronRight className="w-5 h-5 text-gray-400 ml-4" />
+                          </button>
+                          <button
+                            onClick={(e) => handleDeleteCase(c.id, e)}
+                            className="ml-2 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                            title="Delete case"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       ))}
                     </div>
                   </div>

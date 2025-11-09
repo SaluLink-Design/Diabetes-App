@@ -153,7 +153,7 @@ export default function Home() {
 
   return (
     <div className="flex h-screen bg-white">
-      <Sidebar />
+      <Sidebar onViewCases={() => setShowViewCases(true)} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <WorkflowProgress />
         <div className="flex-1 overflow-y-auto bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
