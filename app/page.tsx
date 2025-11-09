@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
+import { Sidebar } from '@/components/Sidebar';
 import { WorkflowProgress } from '@/components/WorkflowProgress';
 import { Step1ClinicalNote } from '@/components/Step1ClinicalNote';
 import { Step2IcdMapping } from '@/components/Step2IcdMapping';
@@ -13,6 +14,7 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { LandingPage } from '@/components/LandingPage';
 import { loadConditionsData, loadMedicineData, loadTreatmentData } from '@/lib/dataLoader';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   const {
@@ -112,7 +114,8 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <WorkflowProgress />
         <div className="flex-1 overflow-y-auto">
@@ -127,9 +130,16 @@ export default function Home() {
         </div>
 
         {/* Authi 1.0 Badge */}
-        <div className="border-t border-white/20 glass px-6 py-4">
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-800">
-            <span>Powered by <span className="font-semibold">SaluLink AI</span></span>
+        <div className="border-t border-gray-200 bg-white px-6 py-3">
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+            <Image
+              src="/Authi.png"
+              alt="Authi Logo"
+              width={24}
+              height={24}
+              className="w-6 h-6 object-contain"
+            />
+            <span>Powered by <span className="font-semibold text-primary-600">Authi 1.0</span></span>
           </div>
         </div>
       </div>

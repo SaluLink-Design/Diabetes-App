@@ -91,7 +91,7 @@ This medication has been prescribed for the management of ${currentCase?.confirm
 
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
-      <div className="glass rounded-2xl shadow-2xl p-8">
+      <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Step 5: Chronic Registration Notes
