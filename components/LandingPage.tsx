@@ -108,8 +108,18 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
           </button>
         </div>
 
-        <div className="flex justify-center">
-          <p className="text-sm text-gray-700">Powered by SaluLink AI</p>
+        <div className="flex justify-center items-center gap-2">
+          <span className="text-sm text-gray-700">Powered by</span>
+          <div className="flex items-center gap-1">
+            <Image
+              src="/Authi copy copy.svg"
+              alt="Authi Icon"
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+            <span className="text-sm font-medium text-gray-700">Authi</span>
+          </div>
         </div>
       </div>
     </div>
