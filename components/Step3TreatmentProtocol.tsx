@@ -10,11 +10,11 @@ import { DocumentationUpload } from './DocumentationUpload';
 type BasketView = 'diagnostic' | 'ongoing';
 
 export const Step3TreatmentProtocol = () => {
-  const { currentCase, allTreatments, updateCurrentCase, nextStep, previousStep } = useAppStore();
+  const { currentCase, allTreatments, updateCurrentCase, nextStep, previousStep, isOngoingActivityMode, setOngoingActivityMode } = useAppStore();
   const [treatment, setTreatment] = useState<Treatment | null>(null);
   const [selectedDiagnostic, setSelectedDiagnostic] = useState<TreatmentItem[]>([]);
   const [selectedOngoing, setSelectedOngoing] = useState<TreatmentItem[]>([]);
-  const [currentView, setCurrentView] = useState<BasketView>('diagnostic');
+  const [currentView, setCurrentView] = useState<BasketView>(isOngoingActivityMode ? 'ongoing' : 'diagnostic');
   const [documentationModal, setDocumentationModal] = useState<{
     open: boolean;
     item: TreatmentItem;
@@ -187,15 +187,18 @@ export const Step3TreatmentProtocol = () => {
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Step 3: Treatment Protocol Generation
+            {isOngoingActivityMode ? 'Ongoing Management Basket' : 'Step 3: Treatment Protocol Generation'}
           </h2>
           <p className="text-gray-600">
-            {currentView === 'diagnostic'
+            {isOngoingActivityMode
+              ? 'Select tests performed during this follow-up consultation'
+              : currentView === 'diagnostic'
               ? 'Select diagnostic procedures, set quantities, and add documentation.'
               : 'Select ongoing management procedures (optional), set quantities, and add documentation. You can skip this section if not needed.'}
           </p>
         </div>
 
+        {!isOngoingActivityMode && (
         <div className="mb-6 flex items-center gap-2">
           <div
             className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
@@ -225,6 +228,7 @@ export const Step3TreatmentProtocol = () => {
             <span className="font-medium">Ongoing Management</span>
           </div>
         </div>
+        )}
 
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-start gap-3">
@@ -443,6 +447,7 @@ export const Step3TreatmentProtocol = () => {
         )}
 
         <div className="flex gap-4">
+          {!isOngoingActivityMode && (
           <button
             onClick={() => {
               if (currentView === 'ongoing') {
@@ -455,6 +460,19 @@ export const Step3TreatmentProtocol = () => {
           >
             {currentView === 'ongoing' ? 'Back to Diagnostic' : 'Previous'}
           </button>
+          )}
+
+          {isOngoingActivityMode && (
+          <button
+            onClick={() => {
+              setOngoingActivityMode(false);
+              window.location.reload();
+            }}
+            className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+          >
+            Cancel
+          </button>
+          )}
 
           {currentView === 'diagnostic' ? (
             <button
@@ -475,11 +493,17 @@ export const Step3TreatmentProtocol = () => {
                 Skip Ongoing Management
               </button>
               <button
-                onClick={handleConfirm}
+                onClick={isOngoingActivityMode ? async () => {
+                  const allSelected = [...selectedOngoing];
+                  updateCurrentCase({ selectedTreatments: allSelected });
+                  await useAppStore.getState().saveCase();
+                  setOngoingActivityMode(false);
+                  window.location.reload();
+                } : handleConfirm}
                 disabled={selectedOngoing.length === 0}
                 className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
-                Confirm Treatment Selection
+                {isOngoingActivityMode ? 'Confirm Coverage' : 'Confirm Treatment Selection'}
               </button>
             </>
           )}
