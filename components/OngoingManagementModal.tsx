@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Calendar, FileText, Activity, Upload, Image as ImageIcon, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Calendar, FileText, Activity, ChevronRight } from 'lucide-react';
 import { ongoingManagementService, caseService } from '@/lib/supabaseHelpers';
-import { DocumentationUpload } from './DocumentationUpload';
+import { OngoingTestSelection } from './OngoingTestSelection';
 import type { TreatmentItem, DocumentFile } from '@/types';
 
 interface OngoingManagementModalProps {
@@ -27,94 +27,20 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
   const [specialistType, setSpecialistType] = useState('');
   const [clinicalNotes, setClinicalNotes] = useState('');
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   // For follow-up consultation
-  const [ongoingTests, setOngoingTests] = useState<TestWithDocumentation[]>([]);
   const [selectedTests, setSelectedTests] = useState<TestWithDocumentation[]>([]);
-  const [showDocModal, setShowDocModal] = useState(false);
-  const [currentTestForDoc, setCurrentTestForDoc] = useState<TestWithDocumentation | null>(null);
+  const [showTestSelection, setShowTestSelection] = useState(false);
 
-  useEffect(() => {
-    if (activityType === 'follow_up') {
-      loadOngoingManagementTests();
-    }
-  }, [activityType, caseId]);
-
-  const loadOngoingManagementTests = async () => {
-    try {
-      setLoading(true);
-      const caseData = await caseService.getCaseById(caseId);
-      if (!caseData) return;
-
-      const ongoingItems = ((caseData as any).selected_treatments || [])
-        .filter((t: any) => t.basketType === 'ongoing')
-        .map((item: any) => ({
-          ...item,
-          isSelected: false,
-          usageCount: item.usageCount || 0,
-          selectedQuantity: item.selectedQuantity || 0,
-        }));
-
-      setOngoingTests(ongoingItems);
-    } catch (error) {
-      console.error('Error loading ongoing tests:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleTestToggle = (test: TestWithDocumentation) => {
-    const usageCount = test.usageCount || 0;
-    const limit = test.coverageLimit || 0;
-
-    if (!test.isSelected && usageCount >= limit) {
-      alert(`Cannot select ${test.description}. Usage limit reached (${usageCount}/${limit})`);
-      return;
-    }
-
-    const updated = ongoingTests.map(t =>
-      t.code === test.code ? { ...t, isSelected: !t.isSelected } : t
-    );
-    setOngoingTests(updated);
-
-    if (!test.isSelected) {
-      setSelectedTests([...selectedTests, { ...test, isSelected: true }]);
-    } else {
-      setSelectedTests(selectedTests.filter(t => t.code !== test.code));
-    }
-  };
-
-  const handleAddDocumentation = (test: TestWithDocumentation) => {
-    setCurrentTestForDoc(test);
-    setShowDocModal(true);
-  };
-
-  const handleSaveDocumentation = (note: string, files: DocumentFile[], timestamp: Date) => {
-    if (!currentTestForDoc) return;
-
-    const updated = ongoingTests.map(t =>
-      t.code === currentTestForDoc.code
-        ? { ...t, documentation: { note, files, timestamp } }
-        : t
-    );
-    setOngoingTests(updated);
-
-    const updatedSelected = selectedTests.map(t =>
-      t.code === currentTestForDoc.code
-        ? { ...t, documentation: { note, files, timestamp } }
-        : t
-    );
-    setSelectedTests(updatedSelected);
-
-    setShowDocModal(false);
-    setCurrentTestForDoc(null);
+  const handleTestSelectionDone = (tests: TestWithDocumentation[]) => {
+    setSelectedTests(tests);
+    setShowTestSelection(false);
   };
 
   const handleSave = async () => {
     if (activityType === 'follow_up') {
       if (selectedTests.length === 0) {
-        alert('Please select at least one test from the Ongoing Management Basket');
+        alert('Please select tests from the Ongoing Management Basket');
         return;
       }
 
@@ -206,9 +132,20 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
     }
   };
 
+  if (showTestSelection) {
+    return (
+      <OngoingTestSelection
+        caseId={caseId}
+        preSelectedTests={selectedTests}
+        onDone={handleTestSelectionDone}
+        onCancel={() => setShowTestSelection(false)}
+      />
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">Add Ongoing Management Activity</h2>
@@ -259,100 +196,53 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
           {activityType === 'follow_up' ? (
             <>
               <div className="border-t border-gray-200 pt-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-900">Ongoing Management Basket</h3>
                   <span className="text-sm font-medium text-primary-600">
                     {selectedTests.length} selected
                   </span>
                 </div>
 
-                {loading ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                    <p className="text-sm text-gray-600 mt-2">Loading tests...</p>
-                  </div>
-                ) : ongoingTests.length === 0 ? (
-                  <div className="text-center py-8">
-                    <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                    <p className="text-gray-600">No ongoing management tests in this case</p>
+                {selectedTests.length === 0 ? (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <p className="text-gray-600 mb-4">No tests selected yet</p>
+                    <button
+                      onClick={() => setShowTestSelection(true)}
+                      className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors inline-flex items-center gap-2"
+                    >
+                      Select Tests
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
                 ) : (
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {ongoingTests.map((test) => {
-                      const usageCount = test.usageCount || 0;
-                      const limit = test.coverageLimit || 0;
-                      const isOverLimit = usageCount >= limit;
-
-                      return (
-                        <div
-                          key={test.code}
-                          className={`border-2 rounded-lg p-4 transition-all ${
-                            test.isSelected
-                              ? 'border-primary-500 bg-primary-50'
-                              : isOverLimit
-                              ? 'border-red-200 bg-red-50 opacity-60'
-                              : 'border-gray-200 hover:border-primary-300'
-                          }`}
-                        >
-                          <div className="flex items-start gap-3">
-                            <input
-                              type="checkbox"
-                              checked={test.isSelected}
-                              onChange={() => handleTestToggle(test)}
-                              disabled={isOverLimit}
-                              className="mt-1 w-5 h-5 text-primary-600 rounded focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            />
-                            <div className="flex-1">
-                              <div className="flex items-start justify-between">
-                                <div>
-                                  <h4 className="font-bold text-gray-900">{test.description}</h4>
-                                  <div className="flex items-center gap-3 mt-1 text-sm text-gray-600">
-                                    <span>Code: {test.code}</span>
-                                    <span className={`font-medium ${isOverLimit ? 'text-red-600' : 'text-gray-900'}`}>
-                                      Usage: {usageCount}/{limit}
-                                    </span>
-                                    {test.specialistsCovered && (
-                                      <span>Specialists: {test.specialistsCovered}</span>
-                                    )}
-                                  </div>
-                                </div>
-                                {test.isSelected && (
-                                  <button
-                                    onClick={() => handleAddDocumentation(test)}
-                                    className="flex items-center gap-2 px-3 py-1 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-                                  >
-                                    <Upload className="w-4 h-4" />
-                                    {test.documentation ? 'Edit' : 'Add'} Documentation
-                                  </button>
-                                )}
+                  <>
+                    <div className="space-y-2 mb-4">
+                      {selectedTests.map((test) => (
+                        <div key={test.code} className="border border-primary-200 bg-primary-50 rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-gray-900">{test.description}</h4>
+                              <div className="flex items-center gap-3 mt-1 text-xs text-gray-600">
+                                <span>Code: {test.code}</span>
+                                <span>Usage: {(test.usageCount || 0) + 1}/{test.coverageLimit}</span>
                               </div>
-                              {test.documentation && (
-                                <div className="mt-3 p-3 bg-white rounded border border-gray-200">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <CheckCircle2 className="w-4 h-4 text-green-600" />
-                                    <span className="text-sm font-medium text-green-700">Documentation Added</span>
-                                  </div>
-                                  <p className="text-sm text-gray-700 line-clamp-2">{test.documentation.note}</p>
-                                  {test.documentation.files.length > 0 && (
-                                    <div className="flex items-center gap-1 mt-2 text-xs text-gray-600">
-                                      <ImageIcon className="w-3 h-3" />
-                                      <span>{test.documentation.files.length} file(s) attached</span>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                              {isOverLimit && (
-                                <div className="mt-2 flex items-center gap-2 text-sm text-red-600">
-                                  <AlertCircle className="w-4 h-4" />
-                                  <span>Coverage limit reached</span>
-                                </div>
-                              )}
                             </div>
+                            {test.documentation && (
+                              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                                Documented
+                              </span>
+                            )}
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setShowTestSelection(true)}
+                      className="w-full border-2 border-primary-600 text-primary-600 px-4 py-2 rounded-lg font-medium hover:bg-primary-50 transition-colors"
+                    >
+                      Modify Selection
+                    </button>
+                  </>
                 )}
               </div>
 
@@ -440,18 +330,6 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
           </button>
         </div>
       </div>
-
-      {showDocModal && currentTestForDoc && (
-        <DocumentationUpload
-          item={currentTestForDoc}
-          caseId={caseId}
-          onSave={handleSaveDocumentation}
-          onClose={() => {
-            setShowDocModal(false);
-            setCurrentTestForDoc(null);
-          }}
-        />
-      )}
     </div>
   );
 };
