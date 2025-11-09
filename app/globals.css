@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
 :root {
   --foreground-rgb: 31, 41, 55;
 }
@@ -10,10 +22,17 @@ body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 20%, #e0e7ff 40%, #dbeafe 60%, #e0f2fe 80%, #f0f9ff 100%);
   background-attachment: fixed;
-  min-height: 100vh;
+  height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  position: relative;
+}
+
+#__next {
+  height: 100%;
+  width: 100%;
 }
 
 @layer utilities {
