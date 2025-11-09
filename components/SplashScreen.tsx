@@ -8,30 +8,25 @@ interface SplashScreenProps {
 }
 
 export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
-  const [phase, setPhase] = useState<'initial' | 'phase2' | 'phase3' | 'final'>('initial');
+  const [phase, setPhase] = useState<'allBlack' | 'babyBlueSalu' | 'babyBlueLink'>('allBlack');
 
   useEffect(() => {
     const timer1 = setTimeout(() => {
-      setPhase('phase2');
-    }, 800);
+      setPhase('babyBlueSalu');
+    }, 1000);
 
     const timer2 = setTimeout(() => {
-      setPhase('phase3');
-    }, 1600);
+      setPhase('babyBlueLink');
+    }, 2000);
 
     const timer3 = setTimeout(() => {
-      setPhase('final');
-    }, 2400);
-
-    const timer4 = setTimeout(() => {
       onComplete();
-    }, 3200);
+    }, 3000);
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
-      clearTimeout(timer4);
     };
   }, [onComplete]);
 
@@ -48,23 +43,20 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         />
       </div>
 
-      <h1 className="text-6xl font-bold mb-12 transition-all duration-500">
-        {phase === 'initial' && (
-          <span style={{ color: '#d1d5db' }}>SaluLink</span>
+      <h1 className="text-6xl font-bold mb-12 transition-all duration-700 ease-in-out">
+        {phase === 'allBlack' && (
+          <span style={{ color: '#1a1a1a' }}>SaluLink</span>
         )}
-        {phase === 'phase2' && (
-          <span style={{ color: '#000000' }}>SaluLink</span>
-        )}
-        {phase === 'phase3' && (
+        {phase === 'babyBlueSalu' && (
           <span>
-            <span style={{ color: '#38b6ff' }}>Salu</span>
-            <span style={{ color: '#000000' }}>Link</span>
+            <span className="transition-colors duration-700 ease-in-out" style={{ color: '#7dd3fc' }}>Salu</span>
+            <span className="transition-colors duration-700 ease-in-out" style={{ color: '#1a1a1a' }}>Link</span>
           </span>
         )}
-        {phase === 'final' && (
+        {phase === 'babyBlueLink' && (
           <span>
-            <span style={{ color: '#60a5fa' }}>Salu</span>
-            <span style={{ color: '#000000' }}>Link</span>
+            <span className="transition-colors duration-700 ease-in-out" style={{ color: '#1a1a1a' }}>Salu</span>
+            <span className="transition-colors duration-700 ease-in-out" style={{ color: '#7dd3fc' }}>Link</span>
           </span>
         )}
       </h1>
