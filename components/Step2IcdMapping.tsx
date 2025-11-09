@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { Condition } from '@/types';
-import { CheckCircle2, Circle } from 'lucide-react';
+import { CheckCircle2, Circle, Search } from 'lucide-react';
 
 export const Step2IcdMapping = () => {
   const { currentCase, allConditions, updateCurrentCase, nextStep, previousStep } = useAppStore();
@@ -11,16 +11,31 @@ export const Step2IcdMapping = () => {
   const [selectedCodes, setSelectedCodes] = useState<Condition[]>(
     currentCase?.selectedIcdCodes || []
   );
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredCodes, setFilteredCodes] = useState<Condition[]>([]);
 
   useEffect(() => {
     if (currentCase?.confirmedCondition) {
-      // Filter ICD codes for the confirmed condition
       const codes = allConditions.filter(
         (c) => c.name === currentCase.confirmedCondition
       );
       setAvailableIcdCodes(codes);
+      setFilteredCodes(codes);
     }
   }, [currentCase?.confirmedCondition, allConditions]);
+
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredCodes(availableIcdCodes);
+    } else {
+      const filtered = availableIcdCodes.filter(
+        (code) =>
+          code.icdCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          code.icdDescription.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredCodes(filtered);
+    }
+  }, [searchTerm, availableIcdCodes]);
 
   const handleToggleCode = (code: Condition) => {
     const isSelected = selectedCodes.some((c) => c.icdCode === code.icdCode);
@@ -68,11 +83,25 @@ export const Step2IcdMapping = () => {
           </p>
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search ICD-10 codes by code or description..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            />
+          </div>
+        </div>
+
         {/* ICD Codes List */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <label className="block text-sm font-medium text-gray-700">
-              Available ICD-10 Codes ({availableIcdCodes.length})
+              Available ICD-10 Codes ({filteredCodes.length} of {availableIcdCodes.length})
             </label>
             <span className="text-sm text-gray-500">
               {selectedCodes.length} selected
@@ -80,7 +109,10 @@ export const Step2IcdMapping = () => {
           </div>
 
           <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 rounded-lg p-4">
-            {availableIcdCodes.map((code) => {
+            {filteredCodes.length === 0 ? (
+              <p className="text-center text-gray-500 py-8">No ICD-10 codes found matching your search.</p>
+            ) : (
+              filteredCodes.map((code) => {
               const isSelected = selectedCodes.some((c) => c.icdCode === code.icdCode);
               
               return (
@@ -113,7 +145,8 @@ export const Step2IcdMapping = () => {
                   </div>
                 </label>
               );
-            })}
+            })
+            )}
           </div>
         </div>
 

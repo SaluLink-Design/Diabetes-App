@@ -20,10 +20,11 @@ export const Step6ClaimSummary = () => {
       setSaving(true);
       await saveCase();
       setSaved(true);
+      alert('Case saved successfully!');
       setTimeout(() => setSaved(false), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving case:', error);
-      alert('Failed to save case. Please try again.');
+      alert(`Failed to save case: ${error?.message || 'Please try again.'}`);
     } finally {
       setSaving(false);
     }

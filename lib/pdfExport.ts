@@ -94,6 +94,27 @@ export const exportCaseToPDF = (caseData: Case & { patient?: Patient }) => {
       if (item.documentation?.note) {
         addText(`  Documentation: ${item.documentation.note}`, 9);
       }
+
+      // Add images if available
+      if (item.documentation?.files && item.documentation.files.length > 0) {
+        const imageFiles = item.documentation.files.filter((f: any) => f.type === 'image');
+        imageFiles.forEach((file: any) => {
+          if (yPosition > pageHeight - 100) {
+            doc.addPage();
+            yPosition = margin;
+          }
+          try {
+            doc.addImage(file.url, 'JPEG', margin, yPosition, 80, 60);
+            yPosition += 65;
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`  ${file.name}`, margin, yPosition);
+            yPosition += 5;
+          } catch (error) {
+            console.error('Error adding image to PDF:', error);
+          }
+        });
+      }
       yPosition += 2;
     });
     yPosition += 3;
@@ -115,6 +136,27 @@ export const exportCaseToPDF = (caseData: Case & { patient?: Patient }) => {
       }
       if (item.documentation?.note) {
         addText(`  Documentation: ${item.documentation.note}`, 9);
+      }
+
+      // Add images if available
+      if (item.documentation?.files && item.documentation.files.length > 0) {
+        const imageFiles = item.documentation.files.filter((f: any) => f.type === 'image');
+        imageFiles.forEach((file: any) => {
+          if (yPosition > pageHeight - 100) {
+            doc.addPage();
+            yPosition = margin;
+          }
+          try {
+            doc.addImage(file.url, 'JPEG', margin, yPosition, 80, 60);
+            yPosition += 65;
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`  ${file.name}`, margin, yPosition);
+            yPosition += 5;
+          } catch (error) {
+            console.error('Error adding image to PDF:', error);
+          }
+        });
       }
       yPosition += 2;
     });
