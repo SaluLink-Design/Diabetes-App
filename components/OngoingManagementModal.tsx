@@ -30,7 +30,7 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
 
   // For follow-up consultation
   const [selectedTests, setSelectedTests] = useState<TestWithDocumentation[]>([]);
-  const [showTestSelection, setShowTestSelection] = useState(false);
+  const [showTestSelection, setShowTestSelection] = useState(true);
 
   const handleTestSelectionDone = (tests: TestWithDocumentation[]) => {
     setSelectedTests(tests);
@@ -132,13 +132,13 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
     }
   };
 
-  if (showTestSelection) {
+  if (showTestSelection && activityType === 'follow_up') {
     return (
       <OngoingTestSelection
         caseId={caseId}
         preSelectedTests={selectedTests}
         onDone={handleTestSelectionDone}
-        onCancel={() => setShowTestSelection(false)}
+        onCancel={onClose}
       />
     );
   }
@@ -148,7 +148,10 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Add Ongoing Management Activity</h2>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Complete Follow-up Activity</h2>
+              <p className="text-sm text-gray-600 mt-1">Review selected tests and add clinical notes</p>
+            </div>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -159,60 +162,48 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
         </div>
 
         <div className="p-6 space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4" />
-                Activity Type *
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="flex items-center gap-2">
+                  <Activity className="w-4 h-4" />
+                  Activity Type
+                </div>
+              </label>
+              <div className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                Follow-up Consultation
               </div>
-            </label>
-            <select
-              value={activityType}
-              onChange={(e) => setActivityType(e.target.value as any)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="follow_up">Follow-up Consultation</option>
-              <option value="specialist_visit">Specialist Visit</option>
-              <option value="diagnostic_test">Diagnostic Test</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Activity Date *
-              </div>
-            </label>
-            <input
-              type="date"
-              value={activityDate}
-              onChange={(e) => setActivityDate(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Activity Date *
+                </div>
+              </label>
+              <input
+                type="date"
+                value={activityDate}
+                onChange={(e) => setActivityDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              />
+            </div>
           </div>
 
           {activityType === 'follow_up' ? (
             <>
               <div className="border-t border-gray-200 pt-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-bold text-gray-900">Ongoing Management Basket</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-gray-900">Selected Tests</h3>
                   <span className="text-sm font-medium text-primary-600">
-                    {selectedTests.length} selected
+                    {selectedTests.length} test{selectedTests.length !== 1 ? 's' : ''} selected
                   </span>
                 </div>
 
                 {selectedTests.length === 0 ? (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <p className="text-gray-600 mb-4">No tests selected yet</p>
-                    <button
-                      onClick={() => setShowTestSelection(true)}
-                      className="bg-primary-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors inline-flex items-center gap-2"
-                    >
-                      Select Tests
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
+                  <div className="border-2 border-amber-200 bg-amber-50 rounded-lg p-6 text-center">
+                    <p className="text-amber-800 font-medium">Please go back and select tests from the Ongoing Management Basket</p>
                   </div>
                 ) : (
                   <>
@@ -224,12 +215,12 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
                               <h4 className="font-medium text-gray-900">{test.description}</h4>
                               <div className="flex items-center gap-3 mt-1 text-xs text-gray-600">
                                 <span>Code: {test.code}</span>
-                                <span>Usage: {(test.usageCount || 0) + 1}/{test.coverageLimit}</span>
+                                <span className="font-medium text-gray-900">Usage: {(test.usageCount || 0) + 1}/{test.coverageLimit}</span>
                               </div>
                             </div>
                             {test.documentation && (
-                              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                                Documented
+                              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                                ✓ Documented
                               </span>
                             )}
                           </div>
@@ -240,7 +231,7 @@ export const OngoingManagementModal = ({ caseId, onClose, onSuccess }: OngoingMa
                       onClick={() => setShowTestSelection(true)}
                       className="w-full border-2 border-primary-600 text-primary-600 px-4 py-2 rounded-lg font-medium hover:bg-primary-50 transition-colors"
                     >
-                      Modify Selection
+                      ← Back to Test Selection
                     </button>
                   </>
                 )}
