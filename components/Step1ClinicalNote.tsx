@@ -61,14 +61,14 @@ export const Step1ClinicalNote = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6">
-      <div className="glass rounded-2xl shadow-2xl p-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Step 1: Clinical Note Input and Analysis
+    <div className="w-full max-w-5xl mx-auto p-8">
+      <div className="glass rounded-3xl shadow-2xl p-10">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Clinical Note Input and Analysis
           </h2>
-          <p className="text-gray-600">
-            Enter or paste the patient's clinical note below. The system will analyze it to identify potential chronic conditions.
+          <p className="text-lg text-gray-600">
+            Enter the patient's clinical note below for AI analysis
           </p>
         </div>
 
@@ -97,7 +97,7 @@ Currently on Metformin 850mg BD`;
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Enter patient clinical note here..."
-            className="w-full h-48 px-4 py-3 bg-white/60 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent resize-none transition-all duration-200"
+            className="w-full h-56 px-5 py-4 bg-white/70 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 resize-none transition-all duration-200 text-base"
             disabled={isAnalyzing || detectedConditions.length > 0}
           />
         </div>
@@ -115,7 +115,7 @@ Currently on Metformin 850mg BD`;
           <button
             onClick={handleAnalyze}
             disabled={isAnalyzing || !note.trim()}
-            className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-4 px-8 rounded-2xl font-semibold text-lg hover:from-purple-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl"
           >
             {isAnalyzing ? (
               <>
