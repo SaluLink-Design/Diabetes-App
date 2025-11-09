@@ -37,12 +37,12 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100">
-      <div className="relative w-80 h-80 mb-8 flex items-center justify-center">
+      <div className="relative w-64 h-64 mb-8 flex items-center justify-center">
         <Image
-          src="/5.svg"
+          src="/Authi.svg"
           alt="Authi Icon"
-          width={320}
-          height={320}
+          width={256}
+          height={256}
           priority
           className="w-full h-full object-contain"
         />
