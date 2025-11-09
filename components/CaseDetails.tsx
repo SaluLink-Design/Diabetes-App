@@ -7,6 +7,7 @@ import type { Case, Patient, OngoingManagementActivity, ReferralLetter } from '@
 import { exportCaseToPDF } from '@/lib/pdfExport';
 import { OngoingManagementModal } from './OngoingManagementModal';
 import { ReferralLetterModal } from './ReferralLetterModal';
+import { useAppStore } from '@/store/useAppStore';
 
 interface CaseDetailsProps {
   caseId: string;
@@ -250,7 +251,9 @@ export const CaseDetails = ({ caseId, onBack, onEditCase }: CaseDetailsProps) =>
                           <div className="mt-1 text-sm text-gray-600">
                             <span>Code: {item.code}</span>
                             {' • '}
-                            <span>Quantity: {item.selectedQuantity || 0} / {item.coverageLimit}</span>
+                            <span>Initial Coverage: {item.selectedQuantity || 0} / {item.coverageLimit}</span>
+                            {' • '}
+                            <span className="font-bold text-primary-700">Used: {item.usageCount || 0} / {item.coverageLimit}</span>
                           </div>
                         </div>
                       ))}
@@ -265,7 +268,10 @@ export const CaseDetails = ({ caseId, onBack, onEditCase }: CaseDetailsProps) =>
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-bold text-gray-900">Ongoing Management Activities</h3>
                   <button
-                    onClick={() => onEditCase(caseId)}
+                    onClick={() => {
+                      useAppStore.getState().setReturnToCaseId(caseId);
+                      onEditCase(caseId);
+                    }}
                     className="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors flex items-center gap-2"
                   >
                     <Plus className="w-4 h-4" />

@@ -11,7 +11,7 @@ import { ongoingManagementService, caseService } from '@/lib/supabaseHelpers';
 type BasketView = 'diagnostic' | 'ongoing';
 
 export const Step3TreatmentProtocol = () => {
-  const { currentCase, allTreatments, updateCurrentCase, nextStep, previousStep, isOngoingActivityMode, setOngoingActivityMode } = useAppStore();
+  const { currentCase, allTreatments, updateCurrentCase, nextStep, previousStep, isOngoingActivityMode, setOngoingActivityMode, setReturnToCaseId } = useAppStore();
   const [treatment, setTreatment] = useState<Treatment | null>(null);
   const [selectedDiagnostic, setSelectedDiagnostic] = useState<TreatmentItem[]>([]);
   const [selectedOngoing, setSelectedOngoing] = useState<TreatmentItem[]>([]);
@@ -538,7 +538,7 @@ export const Step3TreatmentProtocol = () => {
                     } as any);
 
                     setOngoingActivityMode(false);
-                    window.location.reload();
+                    setReturnToCaseId(currentCase?.id || '');
                   } catch (error) {
                     console.error('Error saving activity:', error);
                     alert('Failed to save activity. Please try again.');
@@ -547,7 +547,7 @@ export const Step3TreatmentProtocol = () => {
                 disabled={selectedOngoing.length === 0}
                 className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
-                {isOngoingActivityMode ? 'Confirm Coverage' : 'Confirm Treatment Selection'}
+                {isOngoingActivityMode ? 'Update' : 'Confirm Treatment Selection'}
               </button>
             </>
           )}

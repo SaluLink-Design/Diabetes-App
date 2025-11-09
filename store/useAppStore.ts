@@ -18,6 +18,7 @@ interface AppState {
   // Workflow State
   currentStep: number;
   isOngoingActivityMode: boolean;
+  returnToCaseId: string | null;
 
   // Selected Medical Plan
   selectedPlan: MedicalPlan;
@@ -42,6 +43,7 @@ interface AppState {
   nextStep: () => void;
   previousStep: () => void;
   setOngoingActivityMode: (mode: boolean) => void;
+  setReturnToCaseId: (caseId: string | null) => void;
 
   // Plan Selection
   setSelectedPlan: (plan: MedicalPlan) => void;
@@ -57,6 +59,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   selectedPatient: null,
   currentStep: 1,
   isOngoingActivityMode: false,
+  returnToCaseId: null,
   selectedPlan: 'Core',
   
   // Data Setters
@@ -204,6 +207,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   setOngoingActivityMode: (mode) => set({ isOngoingActivityMode: mode }),
+
+  setReturnToCaseId: (caseId) => set({ returnToCaseId: caseId }),
 
   // Plan Selection
   setSelectedPlan: (plan) => set({ selectedPlan: plan }),
