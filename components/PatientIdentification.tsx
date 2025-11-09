@@ -78,9 +78,10 @@ export const PatientIdentification = ({ onPatientSelected, initialPatient }: Pat
         date_of_birth: '',
         medical_aid_number: '',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating patient:', error);
-      alert('Failed to create patient. Please try again.');
+      const errorMessage = error?.message || 'Failed to create patient. Please try again.';
+      alert(`Error: ${errorMessage}`);
     }
   };
 
