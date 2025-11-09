@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useAppStore } from '@/store/useAppStore';
 import { analyzeClinicalNote, isDiabetesRelated } from '@/lib/clinicalBERT';
-import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle2, FileText } from 'lucide-react';
 
 export const Step1ClinicalNote = () => {
   const { currentCase, updateCurrentCase, nextStep } = useAppStore();
@@ -12,6 +13,19 @@ export const Step1ClinicalNote = () => {
   const [detectedConditions, setDetectedConditions] = useState<string[]>([]);
   const [selectedCondition, setSelectedCondition] = useState<string>('');
   const [error, setError] = useState<string>('');
+
+  const exampleNote = `Patient presents with polyuria and polydipsia.
+Blood glucose: 8.5 mmol/L
+HbA1c: 7.8%
+History of Type 2 Diabetes Mellitus
+Currently on Metformin 850mg BD`;
+
+  const handleLoadExample = () => {
+    setNote(exampleNote);
+    setDetectedConditions([]);
+    setSelectedCondition('');
+    setError('');
+  };
 
   const handleAnalyze = async () => {
     setError('');
@@ -61,31 +75,42 @@ export const Step1ClinicalNote = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">
-          Clinical Note Input Analysis
-        </h2>
-        <p className="text-gray-600">
-          Enter or paste the patient's clinical notes. Select 'Analyse' to identify potential chronic conditions
-        </p>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-
-        {/* Clinical Note Input */}
-        <div className="mb-6">
-          <label className="block text-lg font-semibold text-gray-900 mb-3">
-            Patient Notes:
-          </label>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Enter patient clinical note here..."
-            className="w-full h-64 px-6 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 resize-none text-base bg-gray-50"
-            disabled={isAnalyzing || detectedConditions.length > 0}
-          />
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 py-8">
+      <div className="w-full max-w-6xl mx-auto p-6">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Clinical Note Input Analysis
+          </h2>
+          <p className="text-gray-600">
+            Enter or paste the patient's clinical notes. Select 'Analyse' to identify potential chronic conditions
+          </p>
         </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+
+          {/* Clinical Note Input */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-lg font-semibold text-gray-900">
+                Patient Notes:
+              </label>
+              <button
+                onClick={handleLoadExample}
+                disabled={isAnalyzing || detectedConditions.length > 0}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FileText className="w-4 h-4" />
+                Load Example Note
+              </button>
+            </div>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Enter patient clinical note here..."
+              className="w-full h-64 px-6 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 resize-none text-base bg-gray-50"
+              disabled={isAnalyzing || detectedConditions.length > 0}
+            />
+          </div>
 
         {/* Error Message */}
         {error && (
@@ -174,6 +199,22 @@ export const Step1ClinicalNote = () => {
             </div>
           </div>
         )}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 flex items-center justify-center gap-2 text-gray-600">
+          <span className="text-sm">Powered by</span>
+          <div className="flex items-center gap-1">
+            <Image
+              src="/Authi copy copy.svg"
+              alt="Authi Icon"
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+            <span className="text-sm font-medium">Authi</span>
+          </div>
+        </div>
       </div>
     </div>
   );
