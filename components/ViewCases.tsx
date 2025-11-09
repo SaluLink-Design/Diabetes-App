@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, FileText, Calendar, User, ChevronRight, Filter, X } from 'lucide-react';
+import { Search, FileText, Calendar, User, ChevronRight, Filter, X, RefreshCw } from 'lucide-react';
 import { patientService, caseService } from '@/lib/supabaseHelpers';
 import type { Patient, CaseWithPatient } from '@/types';
 
@@ -29,6 +29,9 @@ export const ViewCases = ({ onCaseSelect, onClose }: ViewCasesProps) => {
         patientService.getAllPatients(),
       ]);
 
+      console.log('Loaded cases:', allCases.length);
+      console.log('Loaded patients:', allPatients.length);
+
       const patientsMap = new Map(allPatients.map(p => [p.id, p]));
 
       const casesWithPatients: CaseWithPatient[] = allCases.map(c => ({
@@ -48,11 +51,12 @@ export const ViewCases = ({ onCaseSelect, onClose }: ViewCasesProps) => {
         updatedAt: new Date((c as any).updated_at),
       }));
 
+      console.log('Processed cases with patients:', casesWithPatients.length);
       setCases(casesWithPatients);
       setPatients(allPatients);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading cases:', error);
-      alert('Failed to load cases. Please try again.');
+      alert(`Failed to load cases: ${error?.message || 'Please try again.'}`);
     } finally {
       setLoading(false);
     }
@@ -94,7 +98,17 @@ export const ViewCases = ({ onCaseSelect, onClose }: ViewCasesProps) => {
       <div className="max-w-7xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">All Cases</h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-bold text-gray-900">All Cases</h2>
+              <button
+                onClick={loadCasesAndPatients}
+                disabled={loading}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                title="Refresh cases"
+              >
+                <RefreshCw className={`w-5 h-5 text-gray-600 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -149,11 +163,19 @@ export const ViewCases = ({ onCaseSelect, onClose }: ViewCasesProps) => {
             </div>
           </div>
 
-          {filteredCases.length === 0 ? (
+          {!loading && cases.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-600 text-lg">No cases found</p>
-              <p className="text-gray-500 text-sm mt-2">Try adjusting your search or filters</p>
+              <p className="text-gray-600 text-lg">No saved cases yet</p>
+              <p className="text-gray-500 text-sm mt-2">Complete and save a case from the workflow to see it here</p>
+            </div>
+          ) : filteredCases.length === 0 ? (
+            <div className="text-center py-12">
+              <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600 text-lg">No cases match your search</p>
+              <p className="text-gray-500 text-sm mt-2">
+                Found {cases.length} total case(s), but none match your current filters
+              </p>
             </div>
           ) : (
             <div className="space-y-6">
