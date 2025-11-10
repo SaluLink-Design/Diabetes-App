@@ -53,9 +53,11 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
         @keyframes pulse-scale {
           0%, 100% {
             transform: scale(1);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
           }
           50% {
             transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(96, 165, 250, 0.6), 0 0 40px rgba(147, 197, 253, 0.4);
           }
         }
 
@@ -100,7 +102,8 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(167, 139, 250, 0.3),
+            rgba(96, 165, 250, 0.4),
+            rgba(147, 197, 253, 0.3),
             transparent
           );
           background-size: 200% 100%;
