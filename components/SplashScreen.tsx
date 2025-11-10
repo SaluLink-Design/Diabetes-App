@@ -77,7 +77,7 @@ export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
       </div>
 
       <div className="absolute bottom-16 left-0 right-0 flex flex-col items-center">
-        <p className="text-sm text-gray-700">Powered by SaluLink AI</p>
+        <p className="text-sm text-gray-700">Powered by Authi</p>
       </div>
     </div>
   );

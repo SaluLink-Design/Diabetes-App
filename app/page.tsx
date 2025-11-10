@@ -181,7 +181,7 @@ export default function Home() {
         {/* Powered by Badge */}
         <div className="bg-white px-6 py-3">
           <div className="flex items-center justify-center gap-2 text-sm text-gray-700">
-            <span>Powered by SaluLink AI</span>
+            <span>Powered by Authi</span>
           </div>
         </div>
       </div>

@@ -50,6 +50,24 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
           }
         }
 
+        @keyframes pulse-scale {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+
+        @keyframes shimmer {
+          0% {
+            background-position: -200% center;
+          }
+          100% {
+            background-position: 200% center;
+          }
+        }
+
         .icon-animate {
           animation: glow 3s ease-in-out infinite, bounce 3s ease-in-out infinite;
         }
@@ -64,6 +82,29 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
           opacity: 1;
           transform: translateY(0);
           transition: all 0.5s ease-in-out;
+        }
+
+        .btn-animate {
+          position: relative;
+          overflow: hidden;
+          animation: pulse-scale 2s ease-in-out infinite;
+        }
+
+        .btn-animate::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(167, 139, 250, 0.3),
+            transparent
+          );
+          background-size: 200% 100%;
+          animation: shimmer 3s ease-in-out infinite;
         }
       `}</style>
 
@@ -95,14 +136,14 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
         <div className="flex gap-6 justify-center max-w-2xl mx-auto mb-8">
           <button
             onClick={onNewCase}
-            className="bg-white hover:bg-gray-50 text-black py-4 px-12 rounded-full font-medium text-lg transition-all duration-200 shadow-md hover:shadow-lg"
+            className="btn-animate bg-white hover:bg-gray-50 text-black py-4 px-12 rounded-full font-medium text-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
           >
             + New Case
           </button>
 
           <button
             onClick={onViewCases}
-            className="bg-white hover:bg-gray-50 text-black py-4 px-12 rounded-full font-medium text-lg transition-all duration-200 shadow-md hover:shadow-lg"
+            className="btn-animate bg-white hover:bg-gray-50 text-black py-4 px-12 rounded-full font-medium text-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
           >
             View Cases
           </button>
@@ -110,16 +151,7 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
 
         <div className="flex justify-center items-center gap-2">
           <span className="text-sm text-gray-700">Powered by</span>
-          <div className="flex items-center gap-1">
-            <Image
-              src="/Authi copy copy.svg"
-              alt="Authi Icon"
-              width={24}
-              height={24}
-              className="object-contain"
-            />
-            <span className="text-sm font-medium text-gray-700">Authi</span>
-          </div>
+          <span className="text-sm font-medium text-gray-700">Authi</span>
         </div>
       </div>
     </div>
