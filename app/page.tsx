@@ -167,7 +167,7 @@ export default function Home() {
       <Sidebar onViewCases={() => setShowViewCases(true)} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <WorkflowProgress />
-        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
+        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
           <div className="py-8">
             {currentStep === 1 && <Step1ClinicalNote />}
             {currentStep === 2 && <Step2IcdMapping />}

@@ -30,14 +30,14 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex flex-col items-center justify-center p-6">
       <style jsx>{`
         @keyframes glow {
           0%, 100% {
-            filter: drop-shadow(0 0 10px rgba(56, 182, 255, 0.5));
+            filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.5));
           }
           50% {
-            filter: drop-shadow(0 0 30px rgba(56, 182, 255, 0.8)) drop-shadow(0 0 40px rgba(96, 165, 250, 0.6));
+            filter: drop-shadow(0 0 30px rgba(167, 139, 250, 0.8)) drop-shadow(0 0 40px rgba(96, 165, 250, 0.6));
           }
         }
 
@@ -119,9 +119,9 @@ export const LandingPage = ({ onNewCase, onViewCases }: LandingPageProps) => {
             className={`text-6xl font-bold mb-12 ${isAnimating ? 'text-fade-out' : 'text-fade-in'}`}
             style={{ lineHeight: '1.2' }}
           >
-            <span style={{ color: '#0099e6' }}>{messages[messageIndex].line1}</span>
+            <span style={{ color: '#a78bfa' }}>{messages[messageIndex].line1}</span>
             <br />
-            <span style={{ color: '#38b6ff' }}>{messages[messageIndex].line2}</span>
+            <span style={{ color: '#60a5fa' }}>{messages[messageIndex].line2}</span>
           </h1>
 
           <div className="w-64 h-64 mx-auto mb-12 flex items-center justify-center icon-animate">

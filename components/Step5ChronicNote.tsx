@@ -273,7 +273,7 @@ This medication has been prescribed for the management of ${currentCase?.confirm
           <button
             onClick={handleConfirm}
             disabled={medications.length === 0 || !allNotesComplete}
-            className="flex-1 bg-gradient-to-r from-cyan-400 to-blue-500 text-white py-3 px-6 rounded-full font-medium hover:from-cyan-500 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-gradient-to-r from-purple-400 to-blue-400 text-white py-3 px-6 rounded-full font-medium hover:from-purple-500 hover:to-blue-500 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             Generate Final Documentation
             <ArrowRight className="w-5 h-5" />
