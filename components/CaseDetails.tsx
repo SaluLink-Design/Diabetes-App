@@ -334,7 +334,7 @@ export const CaseDetails = ({ caseId, onBack, onEditCase }: CaseDetailsProps) =>
                       <div key={referral.id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <span className="px-3 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full">
+                            <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
                               {referral.status.toUpperCase()}
                             </span>
                             <span className={`px-3 py-1 text-sm font-medium rounded-full ${

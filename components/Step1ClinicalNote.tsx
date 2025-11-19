@@ -86,7 +86,7 @@ Currently on Metformin 850mg BD`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 py-8">
       <div className="w-full max-w-6xl mx-auto p-6">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
@@ -113,7 +113,7 @@ Currently on Metformin 850mg BD`;
               <button
                 onClick={handleLoadExample}
                 disabled={isAnalyzing || detectedConditions.length > 0}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FileText className="w-4 h-4" />
                 Load Example Note
@@ -123,7 +123,7 @@ Currently on Metformin 850mg BD`;
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Enter patient clinical note here..."
-              className="w-full h-64 px-6 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 resize-none text-base bg-gray-50"
+              className="w-full h-64 px-6 py-4 border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 resize-none text-base bg-gray-50"
               disabled={isAnalyzing || detectedConditions.length > 0}
             />
           </div>
@@ -208,7 +208,7 @@ Currently on Metformin 850mg BD`;
               <button
                 onClick={handleConfirmCondition}
                 disabled={!selectedCondition}
-                className="flex-1 bg-gradient-to-r from-purple-400 to-blue-400 text-white py-3 px-6 rounded-full font-medium hover:from-purple-500 hover:to-blue-500 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 bg-gradient-to-r from-cyan-400 to-blue-500 text-white py-3 px-6 rounded-full font-medium hover:from-cyan-500 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Confirm Condition
               </button>

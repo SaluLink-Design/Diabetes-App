@@ -23,7 +23,7 @@ export const WorkflowProgress = () => {
               <div
                 className={`flex items-center justify-center w-16 h-16 rounded-full transition-all ${
                   currentStep === step.step
-                    ? 'bg-gradient-to-br from-purple-400 to-blue-400 text-white shadow-lg'
+                    ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-lg'
                     : 'bg-white border-2 border-gray-300 text-gray-400'
                 }`}
               >
